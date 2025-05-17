@@ -11,9 +11,9 @@ export class DriverService {
   constructor(private http: HttpClient) {}
 
   updatePassengerCount(count: number) {
-    // Idealmente deberías tener el ID del chófer autenticado
+    // Se debería tener el ID de chofer autenticado
     return this.http.post(`${this.apiUrl}/update-passenger-count`, {
-      driverId: '123', // en producción, esto se saca del token
+      driverId: '123', // en producción, esto se saca del token, por mientras lo dejamos así
       count: count
     });
   }
