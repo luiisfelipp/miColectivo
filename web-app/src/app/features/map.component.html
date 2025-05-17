@@ -1,0 +1,15 @@
+<div class="map-container">
+    <google-map height="100%" width="100%" [center]="center" [zoom]="14">
+        <map-marker
+        *ngFor="let colectivo of colectivos"
+        [position]="{ lat: colectivo.latitude, lng: colectivo.longitude }"
+        [icon]="{
+          url: colectivo.passenger_count < 4 ? 'verde.png' : 'rojo.png',
+          scaledSize: scaledSize
+        }"
+        [title]="colectivo.name"
+      ></map-marker>
+    </google-map>
+
+  </div>
+  
