@@ -1,0 +1,18 @@
+<ion-header>
+  <!-- <ion-toolbar>
+    <ion-title>Panel del Chofer</ion-title>
+  </ion-toolbar> -->
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Indicador de ubicación activa -->
+  <ion-chip color="success" *ngIf="locationActive">
+    <ion-icon name="radio-outline"></ion-icon>
+    <ion-label>Ubicación activa</ion-label>
+  </ion-chip>
+
+  <h2>Pasajeros actuales: {{ passengerCount }}</h2>
+
+  <ion-button expand="block" (click)="changePassengerCount(1)">+</ion-button>
+  <ion-button expand="block" color="danger" (click)="changePassengerCount(-1)">-</ion-button>
+</ion-content>
