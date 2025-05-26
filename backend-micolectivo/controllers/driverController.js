@@ -58,5 +58,3 @@ exports.getAllDrivers = (req, res) => {
     res.json(drivers);
   });
 };
-
-  

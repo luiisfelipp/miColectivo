@@ -12,7 +12,7 @@ export class DriverHomePage implements OnInit, OnDestroy{
   private locationInterval: any;
   driverId = '123'; // idealmente desde auth,, es un valor “quemado” (hardcoded), puesto manualmente para probar mientras se desarrolla.
   //más adelante, este ID se sacará del token JWT o del usuario autenticado
-  //Esto lo pusimos a mano mientras no tienes login de choferes. Pero en producción, deberías obtenerlo automáticamente después que el chofer inicia sesión.
+  //Esto lo pusimos a mano mientras no se tiene login de choferes. Pero en producción, se debería obtener automáticamente después que el chofer inicia sesión.
 
   constructor(private driverService: DriverService) {}
 
