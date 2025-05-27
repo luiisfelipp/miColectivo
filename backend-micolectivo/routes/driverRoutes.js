@@ -14,4 +14,9 @@ router.get('/:driverId/passenger-count', driverController.getPassengerCount);
 // Actualizar cantidad de pasajeros
 router.post('/update-passenger-count', driverController.updatePassengerCount);
 
+// Nueva API para visibilidad
+router.get('/vehiculos/visibilidad', driverController.getVisibilidad);
+router.post('/vehiculos/visibilidad', driverController.setVisibilidad);
+
+
 module.exports = router;

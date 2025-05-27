@@ -10,12 +10,14 @@ import { HttpClient } from '@angular/common/http';
 export class MapaColectivosPage implements OnInit {
   map!: google.maps.Map;
   driverOverlays: any = {}; // clave: driver.name, valor: OverlayView con lógica
+  vehiculosVisibles: boolean = true;
 
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
     this.loadMap();
     this.startFetchingDrivers();
+    this.consultarEstadoVisibilidad();
   }
 
   // Cargar el mapa al centro de San Bernardo
@@ -31,6 +33,20 @@ export class MapaColectivosPage implements OnInit {
       mapOptions
     );
   }
+
+//consultar estado desde backend
+consultarEstadoVisibilidad() {
+  this.http.get<{visibles: boolean}>('http://localhost:3000/driver/vehiculos/visibilidad')
+    .subscribe({
+      next: (resp) => {
+        this.vehiculosVisibles = resp.visibles;
+      },
+      error: (err) => {
+        console.error('Error al consultar visibilidad:', err);
+      }
+    });
+}
+
 
 
 // Calcular rotación (en grados) entre dos coordenadas
@@ -51,8 +67,13 @@ getRotationAngle(lat1: number, lng1: number, lat2: number, lng2: number): number
 // Actualizar overlays cada cierto tiempo
 startFetchingDrivers() {
   this.fetchDrivers(); // primera carga
-  setInterval(() => this.fetchDrivers(), 2500); // cada 2.5 seg
+  this.consultarEstadoVisibilidad(); // también al inicio
+  setInterval(() => {
+    this.fetchDrivers();
+    this.consultarEstadoVisibilidad();
+  }, 2500); // cada 2.5 segundos
 }
+
 
 fetchDrivers() {
   this.http.get<any[]>('http://localhost:3000/driver/locations').subscribe({
@@ -63,6 +84,15 @@ fetchDrivers() {
 
 // Crear o actualizar los overlays con imágenes rotadas
 updateDriverOverlays(drivers: any[]) {
+  if (!this.vehiculosVisibles) {
+  // Si los vehículos están ocultos, quitamos los existentes y salimos
+  for (const key in this.driverOverlays) {
+    this.driverOverlays[key].setMap(null);
+  }
+  this.driverOverlays = {}; // Limpiamos
+  return;
+}
+
   drivers.forEach((driver) => {
     const position = new google.maps.LatLng(driver.latitude, driver.longitude);
     const passengerCount = driver.passenger_count || 0;
@@ -159,6 +189,11 @@ createDriverOverlay(name: string, position: google.maps.LatLng, imageUrl: string
       if (point && this.div) {
         this.div.style.left = `${point.x - 20}px`; // centrar imagen
         this.div.style.top = `${point.y - 20}px`;
+      }
+    }
+    override onRemove() {
+      if (this.div && this.div.parentNode) {
+        this.div.parentNode.removeChild(this.div);
       }
     }
 

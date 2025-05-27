@@ -58,3 +58,20 @@ exports.getAllDrivers = (req, res) => {
     res.json(drivers);
   });
 };
+
+
+//visibilidad de vehiculos
+let vehiculosVisibles = true; // estado en memoria
+exports.getVisibilidad = (req, res) => {
+  res.json({ visibles: vehiculosVisibles });
+};
+
+exports.setVisibilidad = (req, res) => {
+  const { visibles } = req.body;
+  if (typeof visibles === 'boolean') {
+    vehiculosVisibles = visibles;
+    res.json({ ok: true, visibles });
+  } else {
+    res.status(400).json({ ok: false, error: 'Parámetro inválido' });
+  }
+};

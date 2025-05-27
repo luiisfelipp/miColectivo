@@ -8,7 +8,7 @@ import { GoogleMapsModule } from '@angular/google-maps';
   standalone: true,
   imports: [RouterOutlet, HttpClientModule, GoogleMapsModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.scss'] 
 })
 export class AppComponent {
   title = 'web-app';
