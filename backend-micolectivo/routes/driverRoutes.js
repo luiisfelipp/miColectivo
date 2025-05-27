@@ -15,8 +15,10 @@ router.get('/:driverId/passenger-count', driverController.getPassengerCount);
 router.post('/update-passenger-count', driverController.updatePassengerCount);
 
 // Nueva API para visibilidad
-router.get('/vehiculos/visibilidad', driverController.getVisibilidad);
-router.post('/vehiculos/visibilidad', driverController.setVisibilidad);
+// 👇 estas líneas DEBEN estar exactamente así:
+router.get('/visibilidad/por-vehiculo', driverController.getVisibilidadPorVehiculo);
+router.post('/visibilidad/por-vehiculo', driverController.setVisibilidadPorVehiculo);
+
 
 
 module.exports = router;

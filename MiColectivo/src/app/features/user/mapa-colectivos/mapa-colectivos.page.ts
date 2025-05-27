@@ -10,18 +10,36 @@ import { HttpClient } from '@angular/common/http';
 export class MapaColectivosPage implements OnInit {
   map!: google.maps.Map;
   driverOverlays: any = {}; // clave: driver.name, valor: OverlayView con lógica
-  vehiculosVisibles: boolean = true;
+  visibilidadPorVehiculo: { [id: number]: boolean } = {};
 
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
     this.loadMap();
     this.startFetchingDrivers();
-    this.consultarEstadoVisibilidad();
   }
 
+//
+fetchVisibilidadPorVehiculo() {
+    this.http.get<{ id: number; name: string; visible: boolean }[]>(
+      'http://localhost:3000/driver/visibilidad/por-vehiculo'
+    ).subscribe({
+      next: (data) => {
+        data.forEach(item => {
+          this.visibilidadPorVehiculo[item.id] = item.visible;
+        });
+      },
+      error: (err) => {
+        console.error('Error al obtener visibilidad por vehículo:', err);
+      }
+    });
+}
+
+
+
+
   // Cargar el mapa al centro de San Bernardo
-  loadMap() {
+loadMap() {
     const mapOptions: google.maps.MapOptions = {
       center: { lat: -33.5935, lng: -70.6989 },
       zoom: 15,
@@ -32,21 +50,7 @@ export class MapaColectivosPage implements OnInit {
       document.getElementById('mapa') as HTMLElement,
       mapOptions
     );
-  }
-
-//consultar estado desde backend
-consultarEstadoVisibilidad() {
-  this.http.get<{visibles: boolean}>('http://localhost:3000/driver/vehiculos/visibilidad')
-    .subscribe({
-      next: (resp) => {
-        this.vehiculosVisibles = resp.visibles;
-      },
-      error: (err) => {
-        console.error('Error al consultar visibilidad:', err);
-      }
-    });
 }
-
 
 
 // Calcular rotación (en grados) entre dos coordenadas
@@ -66,12 +70,24 @@ getRotationAngle(lat1: number, lng1: number, lat2: number, lng2: number): number
 
 // Actualizar overlays cada cierto tiempo
 startFetchingDrivers() {
-  this.fetchDrivers(); // primera carga
-  this.consultarEstadoVisibilidad(); // también al inicio
   setInterval(() => {
-    this.fetchDrivers();
-    this.consultarEstadoVisibilidad();
-  }, 2500); // cada 2.5 segundos
+    // 1. Obtener visibilidad actual
+    this.http.get<{ id: number; name: string; visible: boolean }[]>(
+      'http://localhost:3000/driver/visibilidad/por-vehiculo'
+    ).subscribe({
+      next: (data) => {
+        data.forEach(item => {
+          this.visibilidadPorVehiculo[item.id] = item.visible;
+        });
+
+        // 2. Luego obtener y dibujar los colectivos
+        this.fetchDrivers();
+      },
+      error: (err) => {
+        console.error('Error al obtener visibilidad por vehículo:', err);
+      }
+    });
+  }, 2500);
 }
 
 
@@ -84,16 +100,20 @@ fetchDrivers() {
 
 // Crear o actualizar los overlays con imágenes rotadas
 updateDriverOverlays(drivers: any[]) {
-  if (!this.vehiculosVisibles) {
-  // Si los vehículos están ocultos, quitamos los existentes y salimos
-  for (const key in this.driverOverlays) {
-    this.driverOverlays[key].setMap(null);
-  }
-  this.driverOverlays = {}; // Limpiamos
-  return;
-}
-
   drivers.forEach((driver) => {
+    const driverId = driver.id;
+    const name = driver.name;
+    const visible = this.visibilidadPorVehiculo[driverId];
+
+    if (!visible) {
+      // Ocultar si ya existe
+      if (this.driverOverlays[name]) {
+        this.driverOverlays[name].setMap(null);
+        delete this.driverOverlays[name]; // <- importante para recrearlo luego
+      }
+      return; // Saltar este chofer
+    }
+
     const position = new google.maps.LatLng(driver.latitude, driver.longitude);
     const passengerCount = driver.passenger_count || 0;
     const maxPassengers = 4;
@@ -102,9 +122,7 @@ updateDriverOverlays(drivers: any[]) {
       ? 'assets/icon/rojo.png'
       : 'assets/icon/verde.png';
 
-    const name = driver.name;
-
-    // Si ya existe, animamos y rotamos
+    // Si ya existe, actualizarlo
     if (this.driverOverlays[name]) {
       const overlay = this.driverOverlays[name];
       const prevLatLng = overlay.getPosition();
@@ -117,13 +135,15 @@ updateDriverOverlays(drivers: any[]) {
       overlay.setRotation(angle);
       overlay.animateTo(position);
     } else {
-      // Si no existe, lo creamos
+      // Si no existe (porque fue ocultado o es nuevo), crearlo
       const overlay = this.createDriverOverlay(name, position, imageUrl, passengerCount);
       overlay.setMap(this.map);
       this.driverOverlays[name] = overlay;
     }
   });
 }
+
+
 
 // Crear un OverlayView personalizado con rotación
 createDriverOverlay(name: string, position: google.maps.LatLng, imageUrl: string, passengerCount: number) {
@@ -191,11 +211,6 @@ createDriverOverlay(name: string, position: google.maps.LatLng, imageUrl: string
         this.div.style.top = `${point.y - 20}px`;
       }
     }
-    override onRemove() {
-      if (this.div && this.div.parentNode) {
-        this.div.parentNode.removeChild(this.div);
-      }
-    }
 
     override setMap(map: google.maps.Map | null) {
       super.setMap(map);
@@ -233,6 +248,11 @@ createDriverOverlay(name: string, position: google.maps.LatLng, imageUrl: string
         }
       }, 25);
     }
+    override onRemove() {
+      if (this.div && this.div.parentNode) {
+        this.div.parentNode.removeChild(this.div);
+      }
+    } 
   }
 
   return new RotatedOverlay();
