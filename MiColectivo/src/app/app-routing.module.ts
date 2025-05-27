@@ -4,12 +4,8 @@ import { AuthGuard } from './core/services/auth.guard';
 
 const routes: Routes = [
   {
-    path: 'home',
-    loadChildren: () => import('./features/user/home/home.module').then( m => m.HomePageModule)
-  },
-  {
     path: '',
-    redirectTo: '/mapa-colectivos',
+    redirectTo: '/home',
     pathMatch: 'full'
   },
   {
@@ -19,6 +15,10 @@ const routes: Routes = [
   {
     path: 'driver/home',
     loadChildren: () => import('./features/driver/home/home.module').then( m => m.DriverHomePageModule)
+  },
+  {
+    path: 'home',
+    loadChildren: () => import('./features/home/home.module').then( m => m.HomePageModule)
   }
 ];
 
