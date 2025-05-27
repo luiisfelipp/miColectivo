@@ -1,45 +1,38 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { CommonModule } from '@angular/common'; // 👈 Necesario para *ngFor, *ngIf
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [],
+  imports: [CommonModule], // 👈 Asegúrate de incluirlo aquí
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent {
-  vehiculosVisibles: boolean = true;
+  drivers: any[] = [];
 
   constructor(private http: HttpClient) {
-    this.cargarEstadoVisibilidad();
+    this.cargarVisibilidadPorVehiculo();
   }
 
-  // Cargar estado actual desde backend
-  cargarEstadoVisibilidad() {
-    this.http.get<{visibles: boolean}>('http://localhost:3000/driver/vehiculos/visibilidad')
+  cargarVisibilidadPorVehiculo() {
+    this.http.get<any[]>('http://localhost:3000/driver/visibilidad/por-vehiculo')
       .subscribe({
-        next: (resp) => {
-          this.vehiculosVisibles = resp.visibles;
-        },
-        error: (err) => {
-          console.error('Error al cargar estado visibilidad:', err);
-        }
+        next: (data) => this.drivers = data,
+        error: (err) => console.error('Error al cargar visibilidad por vehículo:', err)
       });
   }
 
-  // Cambiar visibilidad al backend
-  toggleVisibilidad() {
-    const nuevoEstado = !this.vehiculosVisibles;
-    this.http.post('http://localhost:3000/driver/vehiculos/visibilidad', { visibles: nuevoEstado })
-      .subscribe({
-        next: () => {
-          this.vehiculosVisibles = nuevoEstado;
-          console.log('Visibilidad actualizada:', nuevoEstado);
-        },
-        error: (err) => {
-          console.error('Error al actualizar visibilidad:', err);
-        }
-      });
+  toggleVisibilidad(driver: any) {
+    const nuevoEstado = !driver.visible;
+
+    this.http.post('http://localhost:3000/driver/visibilidad/por-vehiculo', {
+      driverId: driver.id,
+      visible: nuevoEstado
+    }).subscribe({
+      next: () => driver.visible = nuevoEstado,
+      error: (err) => console.error('Error al actualizar visibilidad:', err)
+    });
   }
 }

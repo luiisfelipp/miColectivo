@@ -59,19 +59,31 @@ exports.getAllDrivers = (req, res) => {
   });
 };
 
-
-//visibilidad de vehiculos
-let vehiculosVisibles = true; // estado en memoria
-exports.getVisibilidad = (req, res) => {
-  res.json({ visibles: vehiculosVisibles });
+// Visibilidad por vehículo (en memoria)
+let visibilidadPorVehiculo = {
+  1: true,
+  2: true,
+  3: true,
+  4: true,
+  5: true,
 };
 
-exports.setVisibilidad = (req, res) => {
-  const { visibles } = req.body;
-  if (typeof visibles === 'boolean') {
-    vehiculosVisibles = visibles;
-    res.json({ ok: true, visibles });
-  } else {
-    res.status(400).json({ ok: false, error: 'Parámetro inválido' });
+exports.getVisibilidadPorVehiculo = (req, res) => {
+  const respuesta = Object.entries(visibilidadPorVehiculo).map(([id, visible]) => ({
+    id: parseInt(id),
+    name: `Vehículo ${id}`, // puedes personalizarlo si tienes los nombres
+    visible
+  }));
+  res.json(respuesta);
+};
+
+exports.setVisibilidadPorVehiculo = (req, res) => {
+  const { driverId, visible } = req.body;
+  if (typeof driverId !== 'number' || typeof visible !== 'boolean') {
+    return res.status(400).json({ error: 'Parámetros inválidos' });
   }
+
+  visibilidadPorVehiculo[driverId] = visible;
+  res.json({ ok: true, driverId, visible });
 };
+

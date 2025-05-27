@@ -1,6 +1,55 @@
-<div>
-  <button (click)="toggleVisibilidad()">
-    {{ vehiculosVisibles ? 'Ocultar Vehículos' : 'Mostrar Vehículos' }}
-  </button>
-  <p>Estado actual: <strong>{{ vehiculosVisibles ? 'Vehículos visibles' : 'Vehículos ocultos' }}</strong></p>
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h1>🚌 Mi Colectivo</h1>
+    </div>
+    <nav class="menu">
+      <ul>
+        <li class="active">
+          <span>🚦 Visibilidad de Vehículos</span>
+        </li>
+        <!-- Futuras secciones -->
+        <!-- <li><span>📊 Estadísticas</span></li> -->
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main content -->
+  <div class="main">
+    <header class="main-header">
+      <h2>Panel de Administración de Línea</h2>
+    </header>
+
+    <section class="content">
+      <h3>Control de Visibilidad Individual</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let driver of drivers">
+            <td>{{ driver.id }}</td>
+            <td>{{ driver.name }}</td>
+            <td>
+              <span [class.visible]="driver.visible" [class.hidden]="!driver.visible">
+                {{ driver.visible ? 'Visible' : 'Oculto' }}
+              </span>
+            </td>
+            <td>
+              <button (click)="toggleVisibilidad(driver)">
+                {{ driver.visible ? 'Ocultar' : 'Mostrar' }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
 </div>
