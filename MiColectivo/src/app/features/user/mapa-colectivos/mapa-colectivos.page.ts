@@ -1,24 +1,127 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
+// Interfaz que representa a un chofer (driver) del sistema
+interface Driver {
+  id: number;
+  name: string;
+  visible: boolean;
+  linea_id: number; // Línea a la que pertenece
+}
+
+
 @Component({
   selector: 'app-mapa-colectivos',
   templateUrl: './mapa-colectivos.page.html',
   styleUrls: ['./mapa-colectivos.page.scss'],
   standalone: false,
+  
 })
 export class MapaColectivosPage implements OnInit {
+  // Coordenadas de recorrido por línea
+  lineaCoordenadas: { [lineaId: number]: google.maps.LatLngLiteral[] } = {
+    1: [ 
+      { lat: -33.59811202557675, lng: -70.71042826842779 },
+      { lat: -33.59878269849519, lng: -70.70730832357687 },
+      { lat: -33.59904177669798, lng: -70.70610966722803 },
+      { lat: -33.59631825713132, lng: -70.70515377671293 },
+      { lat: -33.596539427818826, lng: -70.70377304598303 },
+      { lat: -33.59495962472213, lng: -70.70321544317109 },
+      { lat: -33.59464366063627, lng: -70.70456582817069 },
+      { lat: -33.59382673473333, lng: -70.70869722299125 }
+    ],
+    2: [
+      { lat: -33.592776786559334, lng: -70.69968402995616 },
+      { lat: -33.59843783711787, lng: -70.70166027414858 },
+      { lat: -33.597486101310686, lng: -70.70557629923286 },
+      { lat: -33.59463951383927, lng: -70.70455122847373 },
+      { lat: -33.594389282203544, lng: -70.70592451948977 },
+      { lat: -33.59383519531262, lng: -70.70859599961577 },
+      { lat: -33.589248116390095, lng: -70.70696293698138 }
+    ]
+  };
+  // Referencia al trazo dibujado de la línea seleccionada
+  lineaPolyline: google.maps.Polyline | null = null;
+
+
   map!: google.maps.Map;
   driverOverlays: any = {}; // clave: driver.name, valor: OverlayView con lógica
+  // Diccionario que guarda si el vehículo está visible o no (por id)
   visibilidadPorVehiculo: { [id: number]: boolean } = {};
+
+  // Lista de líneas de colectivo, que también llega desde el backend
+  lineas: { id: number; nombre: string; color?: string }[] = [];
+  // Línea seleccionada por el usuario en el <ion-select>
+  lineaSeleccionada: number | null = null;
+
+  // Lista completa de choferes que se reciben desde el backend
+  drivers: Driver[] = [];
 
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    this.loadMap();
+    this.loadMap(); // carga el mapa
+    this.obtenerLineas(); // obtiene las líneas desde el backend
     this.startFetchingDrivers();
+    this.fetchDriversConLinea();     // una vez, para saber a qué línea pertenece cada chofer
   }
 
+  // Esta función solo se usa al principio para saber qué línea tiene cada chofer
+fetchDriversConLinea() {
+  this.http.get<Driver[]>('http://localhost:3000/driver/con-linea')
+    .subscribe({
+      next: (data) => {
+        this.drivers = data; // guardamos solo para lógica de filtrado por línea
+      },
+      error: (err) => {
+        console.error('Error al obtener choferes con línea:', err);
+      }
+    });
+}
+
+
+obtenerLineas() {
+  this.http.get<any[]>('http://localhost:3000/lineas').subscribe(data => {
+    this.lineas = data;
+  });
+}
+
+// Esta función se llama cuando el usuario selecciona una línea
+filtrarPorLinea() {
+  // Filtrar la visibilidad de colectivos según la línea seleccionada
+  this.drivers.forEach(driver => {
+    const visible = this.lineaSeleccionada === null || driver.linea_id === this.lineaSeleccionada;
+    this.visibilidadPorVehiculo[driver.id] = visible;
+  });
+
+  // Eliminar línea anterior si existe
+  if (this.lineaPolyline) {
+    this.lineaPolyline.setMap(null);
+    this.lineaPolyline = null;
+  }
+
+  // Si hay una línea seleccionada y tiene coordenadas definidas...
+  if (this.lineaSeleccionada !== null && this.lineaCoordenadas[this.lineaSeleccionada]) {
+    const path = this.lineaCoordenadas[this.lineaSeleccionada];
+
+    // Buscar el color correspondiente a la línea desde this.lineas
+    const linea = this.lineas.find(l => l.id === this.lineaSeleccionada);
+    const color = linea?.color || '#0000FF'; // azul por defecto
+
+    this.lineaPolyline = new google.maps.Polyline({
+      path,
+      geodesic: true,
+      strokeColor: color,
+      strokeOpacity: 0.9,
+      strokeWeight: 6
+    });
+
+    this.lineaPolyline.setMap(this.map);
+  }
+}
+
+
+  
 //
 fetchVisibilidadPorVehiculo() {
     this.http.get<{ id: number; name: string; visible: boolean }[]>(
@@ -36,12 +139,10 @@ fetchVisibilidadPorVehiculo() {
 }
 
 
-
-
   // Cargar el mapa al centro de San Bernardo
 loadMap() {
     const mapOptions: google.maps.MapOptions = {
-      center: { lat: -33.5935, lng: -70.6989 },
+      center: { lat: -33.59635152196424, lng: -70.70481241349121 },
       zoom: 15,
     };
     
@@ -101,18 +202,21 @@ fetchDrivers() {
 // Crear o actualizar los overlays con imágenes rotadas
 updateDriverOverlays(drivers: any[]) {
   drivers.forEach((driver) => {
-    const driverId = driver.id;
-    const name = driver.name;
-    const visible = this.visibilidadPorVehiculo[driverId];
+  const driverId = driver.id;
+  const name = driver.name;
 
-    if (!visible) {
-      // Ocultar si ya existe
-      if (this.driverOverlays[name]) {
-        this.driverOverlays[name].setMap(null);
-        delete this.driverOverlays[name]; // <- importante para recrearlo luego
-      }
-      return; // Saltar este chofer
+  const visible = this.visibilidadPorVehiculo[driverId];
+  const coincideLinea = this.lineaSeleccionada === null || driver.linea_id === this.lineaSeleccionada;
+
+  // Si no debe mostrarse (por visibilidad o filtro), lo removemos del mapa
+  if (!visible || !coincideLinea) {
+    if (this.driverOverlays[name]) {
+      this.driverOverlays[name].setMap(null);
+      delete this.driverOverlays[name];
     }
+    return;
+  }
+
 
     const position = new google.maps.LatLng(driver.latitude, driver.longitude);
     const passengerCount = driver.passenger_count || 0;

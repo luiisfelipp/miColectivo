@@ -8,3 +8,26 @@
 .mapa-container {
     height: 100%;
   }
+
+.toolbar-linea-abajo {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40%;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  padding: 2px 8px;
+  z-index: 9999;
+
+  ion-select {
+    --padding-start: 8px;
+    --placeholder-color: #333;
+    --background: transparent;
+    --color: #000;
+    font-size: 14px;
+    width: 100%;
+  }
+}
+

@@ -1,0 +1,65 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Mi Perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- Tarjeta principal con información del usuario -->
+  <ion-card class="perfil-card" *ngIf="usuario">
+    <ion-card-header>
+      <ion-card-title>Información Personal</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-list lines="none">
+        <!-- Nombre -->
+        <ion-item>
+          <ion-label class="label-titulo">Nombre</ion-label>
+          <ion-text>{{ usuario.nombre }}</ion-text>
+        </ion-item>
+
+        <!-- Correo -->
+        <ion-item>
+          <ion-label class="label-titulo">Correo</ion-label>
+          <ion-text>{{ usuario.email }}</ion-text>
+        </ion-item>
+
+        <!-- Número de telefono -->
+        <ion-item>
+          <ion-label class="label-titulo">Número de telefono</ion-label>
+          <ion-text>{{ usuario.telefono }}</ion-text>
+        </ion-item>
+
+        <!-- Puedes agregar más campos aquí -->
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Mensaje en caso de que no haya datos cargados -->
+  <div *ngIf="!usuario">
+    <ion-text color="medium">Cargando información del perfil...</ion-text>
+  </div>
+
+</ion-content>
+
+
+<ion-tab-bar slot="bottom" class="custom-tab-bar">
+  <ion-tab-button tab="support" class="tab-button" [routerLink]="['/reportes']">
+    <ion-icon name="chatbubbles" class="tab-icon"></ion-icon>
+    <ion-label class="tab-label">Reportes</ion-label>
+    <ion-badge color="danger" class="tab-badge">2</ion-badge>
+  </ion-tab-button>
+
+  <ion-tab-button tab="map" class="tab-button" [routerLink]="['/mapa-colectivos']"> 
+    <ion-icon name="map" class="tab-icon"></ion-icon>
+    <ion-label class="tab-label">Mapa</ion-label>
+  </ion-tab-button>
+  
+  <ion-tab-button tab="profile" class="tab-button" >
+    <ion-icon name="person" class="tab-icon"></ion-icon>
+    <ion-label class="tab-label">Perfil</ion-label>
+    <ion-badge color="warning" class="tab-badge">3</ion-badge>
+  </ion-tab-button>
+</ion-tab-bar>

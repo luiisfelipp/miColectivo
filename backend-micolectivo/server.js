@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const driverRoutes = require('./routes/driverRoutes');
+const lineaRoutes = require('./routes/lineaRoutes');
+const reporteRoutes = require('./routes/reporteRoutes');
 
 dotenv.config();
 
@@ -11,6 +13,8 @@ app.use(express.json());
 
 // Rutas
 app.use('/driver', driverRoutes);
+app.use('/lineas', lineaRoutes);
+app.use('/api', reporteRoutes); // esto hará que las rutas estén en /api/reportes
 
 // Inicio del servidor
 const PORT = process.env.PORT || 3000;

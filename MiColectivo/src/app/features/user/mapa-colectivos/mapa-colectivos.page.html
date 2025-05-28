@@ -1,9 +1,37 @@
-<ion-header>
-  <!-- <ion-toolbar>
-    <ion-title>Mapa de Colectivos</ion-title>
-  </ion-toolbar> -->
-</ion-header>
+<ion-content fullscreen="true">
+  <div id="mapa" style="height: 100%; position: relative;"></div>
 
-<ion-content>
-  <div id="mapa" style="height: 100%;"></div>
+  <!-- Toolbar flotante abajo -->
+  <ion-toolbar class="toolbar-linea-abajo">
+    <ion-select
+      interface="popover"
+      placeholder="Línea"
+      [(ngModel)]="lineaSeleccionada"
+      (ionChange)="filtrarPorLinea()"
+    >
+      <ion-select-option [value]="null">Ver líneas</ion-select-option>
+      <ion-select-option *ngFor="let linea of lineas" [value]="linea.id">
+        {{ linea.nombre }}
+      </ion-select-option>
+    </ion-select>
+  </ion-toolbar>
 </ion-content>
+
+<ion-tab-bar slot="bottom" class="custom-tab-bar">
+  <ion-tab-button tab="support" class="tab-button" [routerLink]="['/reportes']">
+    <ion-icon name="chatbubbles" class="tab-icon"></ion-icon>
+    <ion-label class="tab-label">Reportes</ion-label>
+    <ion-badge color="danger" class="tab-badge">2</ion-badge>
+  </ion-tab-button>
+
+  <ion-tab-button tab="map" class="tab-button"> 
+    <ion-icon name="map" class="tab-icon"></ion-icon>
+    <ion-label class="tab-label">Mapa</ion-label>
+  </ion-tab-button>
+  
+  <ion-tab-button tab="profile" class="tab-button" [routerLink]="['/perfil']">
+    <ion-icon name="person" class="tab-icon"></ion-icon>
+    <ion-label class="tab-label">Perfil</ion-label>
+    <ion-badge color="warning" class="tab-badge">3</ion-badge>
+  </ion-tab-button>
+</ion-tab-bar>

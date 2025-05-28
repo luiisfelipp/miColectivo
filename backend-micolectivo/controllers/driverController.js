@@ -44,7 +44,7 @@ exports.updateLocation = (req, res) => {
 
   
 exports.getAllDrivers = (req, res) => {
-  const sql = 'SELECT id, name, latitude, longitude, passenger_count FROM drivers';
+  const sql = 'SELECT id, name, latitude, longitude, passenger_count, linea_id FROM drivers';
   db.query(sql, (err, results) => {
     if (err) return res.status(500).json({ error: 'Error al obtener ubicaciones' });
 
@@ -87,3 +87,20 @@ exports.setVisibilidadPorVehiculo = (req, res) => {
   res.json({ ok: true, driverId, visible });
 };
 
+
+
+
+// Endpoint para obtener visibilidad y línea de los vehículos (colectivos)
+exports.getDriversConLinea = (req, res) => {
+  const sql = 'SELECT id, name, linea_id FROM drivers';
+
+  // Ejecutamos la consulta
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error al consultar drivers con línea:', err);
+      return res.status(500).json({ error: 'Error interno del servidor' });
+    }
+
+    res.json(results);
+  });
+};

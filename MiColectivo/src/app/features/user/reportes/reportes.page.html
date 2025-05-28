@@ -1,0 +1,89 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Reportar Incidente</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <ion-card class="form-card">
+    <ion-card-header>
+      <ion-card-title>Crear Reporte</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <form [formGroup]="formulario" (ngSubmit)="enviarReporte()">
+
+        <!-- Motivo -->
+        <ion-item>
+          <ion-label position="stacked">Motivo</ion-label>
+          <ion-select formControlName="motivo" placeholder="Seleccione una opción" interface="popover">
+            <ion-select-option *ngFor="let motivo of motivos" [value]="motivo">
+              {{ motivo }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <!-- Descripción -->
+        <ion-item>
+          <ion-label position="stacked">Descripción</ion-label>
+          <ion-textarea formControlName="descripcion" autoGrow="true"></ion-textarea>
+        </ion-item>
+
+        <!-- Colectivo -->
+        <ion-item>
+          <ion-label position="stacked">Identificación del Colectivo</ion-label>
+          <ion-input formControlName="colectivo"></ion-input>
+        </ion-item>
+
+        <!-- Botón -->
+        <ion-button expand="block" color="success" type="submit" [disabled]="formulario.invalid">
+          Enviar Reporte
+        </ion-button>
+
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Lista de reportes -->
+  <ion-card *ngIf="reportes.length > 0">
+    <ion-card-header>
+      <ion-card-title>Mis Reportes</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let r of reportes">
+          <ion-label>
+            <h3>{{ r.motivo }}</h3>
+            <p>{{ r.descripcion }}</p>
+            <p><strong>Colectivo:</strong> {{ r.colectivo }}</p>
+          </ion-label>
+          <ion-button fill="clear" color="danger" slot="end" *ngIf="r.id" (click)="eliminarReporte(r.id!)">
+            <ion-icon name="trash"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
+
+<ion-tab-bar slot="bottom" class="custom-tab-bar">
+  <ion-tab-button tab="support" class="tab-button">
+    <ion-icon name="chatbubbles" class="tab-icon"></ion-icon>
+    <ion-label class="tab-label">Reportes</ion-label>
+    <ion-badge color="danger" class="tab-badge">2</ion-badge>
+  </ion-tab-button>
+
+  <ion-tab-button tab="map" class="tab-button" [routerLink]="['/mapa-colectivos']"> 
+    <ion-icon name="map" class="tab-icon"></ion-icon>
+    <ion-label class="tab-label">Mapa</ion-label>
+  </ion-tab-button>
+  
+  <ion-tab-button tab="profile" class="tab-button" [routerLink]="['/perfil']">
+    <ion-icon name="person" class="tab-icon"></ion-icon>
+    <ion-label class="tab-label">Perfil</ion-label>
+    <ion-badge color="warning" class="tab-badge">3</ion-badge>
+  </ion-tab-button>
+</ion-tab-bar>
