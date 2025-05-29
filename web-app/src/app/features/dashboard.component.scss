@@ -109,3 +109,92 @@ button {
 button:hover {
   background-color: #16a085;
 }
+
+
+
+// REPORTES
+
+h3.titulo-reportes {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+
+.tabla-reportes {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+
+  th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+  text-align: center; // 👈 Agrega esta línea
+  }
+
+  td {
+  text-align: center; // 👈 Centra el contenido también
+  }
+
+
+  th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+  }
+
+  .estado {
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+    display: inline-block;
+  }
+
+  .pendiente {
+    background-color: #ffeeba;
+    color: #856404;
+  }
+
+  .proceso {
+    background-color: #cce5ff;
+    color: #004085;
+  }
+
+  .finalizado {
+    background-color: #d4edda;
+    color: #155724;
+  }
+
+  .acciones {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .btn-estado {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-estado.proceso {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .btn-estado.finalizado {
+    background-color: #28a745;
+    color: white;
+  }
+
+  .btn-estado:hover {
+    opacity: 0.85;
+  }
+}
+
+
+
+//OTROS
+

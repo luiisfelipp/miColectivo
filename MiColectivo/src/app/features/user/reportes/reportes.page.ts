@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Reporte, ReporteService } from '../../../core/services/reportes.service'; // Ajusta el path según tu estructura
 import { ToastController } from '@ionic/angular';
 
+
 @Component({
   selector: 'app-reportes',
   templateUrl: './reportes.page.html',
@@ -14,6 +15,11 @@ export class ReportesPage implements OnInit {
   reportes: Reporte[] = [];
   formulario!: FormGroup;
 
+  usuario = {
+    nombre: 'Juan Pérez',
+    email: 'juan@example.com',
+    telefono: '+569 93949596'
+  };
   // Lista de motivos disponibles para el formulario
   motivos = [
     'Pérdida de documentos',
@@ -41,10 +47,16 @@ export class ReportesPage implements OnInit {
   }
 
   // Enviar el formulario al backend
+  
   enviarReporte() {
     if (this.formulario.invalid) return;
 
-    const nuevoReporte: Reporte = this.formulario.value;
+    const nuevoReporte: Reporte = {
+      ...this.formulario.value,
+      nombre: this.usuario.nombre,
+      email: this.usuario.email,
+      telefono: this.usuario.telefono
+    };
 
     this.reporteService.crearReporte(nuevoReporte).subscribe({
       next: (reporteCreado) => {

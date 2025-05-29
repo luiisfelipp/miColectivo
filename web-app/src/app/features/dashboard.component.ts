@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { CommonModule } from '@angular/common'; // 👈 Necesario para *ngFor, *ngIf
+import { CommonModule } from '@angular/common'; // 
+import { Reporte, ReporteService } from '../features/reportes/reporte.service'; // ajusta ruta si es necesario
+
 
 @Component({
   selector: 'app-dashboard',
@@ -11,9 +13,27 @@ import { CommonModule } from '@angular/common'; // 👈 Necesario para *ngFor, *
 })
 export class DashboardComponent {
   drivers: any[] = [];
+  reportes: Reporte[] = [];
+  seccionActiva: 'visibilidad' | 'reportes' = 'visibilidad';
 
-  constructor(private http: HttpClient) {
+
+  constructor(private http: HttpClient, private reporteService: ReporteService) {
     this.cargarVisibilidadPorVehiculo();
+  }
+
+  ngOnInit(): void {
+    this.cargarReportes();
+  }
+
+  cargarReportes(): void {
+    this.reporteService.obtenerReportes().subscribe({
+      next: (data) => this.reportes = data,
+      error: (err) => console.error('Error cargando reportes:', err)
+    });
+  }
+
+  cambiarSeccion(seccion: 'visibilidad' | 'reportes') {
+    this.seccionActiva = seccion;
   }
 
   cargarVisibilidadPorVehiculo() {
@@ -35,4 +55,21 @@ export class DashboardComponent {
       error: (err) => console.error('Error al actualizar visibilidad:', err)
     });
   }
+
+  //cambiar estados de reporte
+  cambiarEstado(reporte: Reporte, nuevoEstado: string) {
+  const actualizado = { ...reporte, estado: nuevoEstado };
+
+  this.reporteService.actualizarReporte(actualizado).subscribe({
+    next: () => {
+      reporte.estado = nuevoEstado; // actualiza en la vista sin volver a cargar
+    },
+    error: err => {
+      console.error('Error al actualizar estado del reporte', err);
+    }
+  });
+  }
 }
+
+
+

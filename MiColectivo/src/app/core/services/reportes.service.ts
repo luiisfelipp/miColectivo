@@ -8,6 +8,10 @@ export interface Reporte {
   motivo: string;
   descripcion: string;
   colectivo: string;
+  estado?: string;     
+  nombre?: string;      
+  email?: string;
+  telefono?: string;
 }
 
 @Injectable({ providedIn: 'root' })

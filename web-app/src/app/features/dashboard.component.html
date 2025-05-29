@@ -6,24 +6,25 @@
     </div>
     <nav class="menu">
       <ul>
-        <li class="active">
-          <span>🚦 Visibilidad de Vehículos</span>
+        <li [class.active]="seccionActiva === 'visibilidad'" (click)="cambiarSeccion('visibilidad')">
+          🚦 Visibilidad de Vehículos
         </li>
-        <!-- Futuras secciones -->
-        <!-- <li><span>📊 Estadísticas</span></li> -->
+        <li [class.active]="seccionActiva === 'reportes'" (click)="cambiarSeccion('reportes')">
+          📝 Reportes de Usuarios
+        </li>
       </ul>
     </nav>
   </aside>
 
   <!-- Main content -->
-  <div class="main">
+  <main class="main">
     <header class="main-header">
       <h2>Panel de Administración de Línea</h2>
     </header>
 
-    <section class="content">
+    <!-- Sección Visibilidad -->
+    <section *ngIf="seccionActiva === 'visibilidad'" class="content">
       <h3>Control de Visibilidad Individual</h3>
-
       <table>
         <thead>
           <tr>
@@ -51,5 +52,52 @@
         </tbody>
       </table>
     </section>
-  </div>
-</div>
+
+  
+  <!-- Sección Reportes -->
+<section *ngIf="seccionActiva === 'reportes'" class="content">
+  <h3>Reportes Recibidos</h3>
+
+  <table class="tabla-reportes" *ngIf="reportes.length > 0; else sinReportes">
+    <thead>
+      <tr>
+        <th>Motivo</th>
+        <th>Descripción</th>
+        <th>Colectivo</th>
+        <th>Usuario</th>
+        <th>Estado</th>
+        <th>Gestión</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let reporte of reportes">
+        <td>{{ reporte.motivo }}</td>
+        <td>{{ reporte.descripcion }}</td>
+        <td>{{ reporte.colectivo }}</td>
+        <td>
+          <strong>{{ reporte.nombre }}</strong><br>
+          {{ reporte.email }}<br>
+          {{ reporte.telefono }}
+        </td>
+        <td>
+          <span class="estado" [ngClass]="{
+            'pendiente': reporte.estado === 'Pendiente' || !reporte.estado,
+            'proceso': reporte.estado === 'En proceso',
+            'finalizado': reporte.estado === 'Finalizado'
+          }">
+            {{ reporte.estado || 'Pendiente' }}
+          </span>
+        </td>
+        <td class="acciones">
+          <button class="btn-estado proceso" (click)="cambiarEstado(reporte, 'En proceso')">🛠 En proceso</button>
+          <button class="btn-estado finalizado" (click)="cambiarEstado(reporte, 'Finalizado')">✅ Finalizado</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ng-template #sinReportes>
+    <p>No hay reportes para mostrar.</p>
+  </ng-template>
+</section>
+

@@ -58,6 +58,7 @@
             <h3>{{ r.motivo }}</h3>
             <p>{{ r.descripcion }}</p>
             <p><strong>Colectivo:</strong> {{ r.colectivo }}</p>
+            <p><strong>Estado:</strong> {{ r.estado || 'Pendiente' }}</p> 
           </ion-label>
           <ion-button fill="clear" color="danger" slot="end" *ngIf="r.id" (click)="eliminarReporte(r.id!)">
             <ion-icon name="trash"></ion-icon>

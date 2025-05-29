@@ -8,6 +8,11 @@ export interface Reporte {
   motivo: string;
   descripcion: string;
   colectivo: string;
+  estado: string;
+  nombre?: string;     // NUEVO
+  email?: string;      // NUEVO
+  telefono?: string;   // NUEVO
+  
 }
 
 @Injectable({
@@ -21,4 +26,10 @@ export class ReporteService {
   obtenerReportes(): Observable<Reporte[]> {
     return this.http.get<Reporte[]>(this.apiUrl);
   }
+
+
+  actualizarReporte(reporte: Reporte): Observable<any> {
+  return this.http.put(`${this.apiUrl}/${reporte.id}`, reporte);
+}
+
 }

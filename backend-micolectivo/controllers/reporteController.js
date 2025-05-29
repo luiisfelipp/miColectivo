@@ -1,14 +1,17 @@
 const db = require('../db');
 
 const crearReporte = (req, res) => {
-  const { motivo, descripcion, colectivo } = req.body;
-  const query = 'INSERT INTO reportes (motivo, descripcion, colectivo) VALUES (?, ?, ?)';
-  db.query(query, [motivo, descripcion, colectivo], (err, result) => {
+  const { motivo, descripcion, colectivo, nombre, email, telefono } = req.body;
+  const query = `
+    INSERT INTO reportes (motivo, descripcion, colectivo, nombre, email, telefono)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `;
+  db.query(query, [motivo, descripcion, colectivo, nombre, email, telefono], (err, result) => {
     if (err) {
       console.error('Error al guardar el reporte:', err);
       return res.status(500).json({ error: 'Error al guardar el reporte' });
     }
-    res.status(201).json({ id: result.insertId, motivo, descripcion, colectivo });
+    res.status(201).json({ id: result.insertId, motivo, descripcion, colectivo, nombre, email, telefono });
   });
 };
 
@@ -33,8 +36,24 @@ const eliminarReporte = (req, res) => {
   });
 };
 
+const actualizarReporte = (req, res) => {
+  const { id } = req.params;
+  const { estado } = req.body;
+
+  const query = 'UPDATE reportes SET estado = ? WHERE id = ?';
+  db.query(query, [estado, id], (err, result) => {
+    if (err) {
+      console.error('Error al actualizar el estado del reporte:', err);
+      return res.status(500).json({ error: 'Error al actualizar el estado del reporte' });
+    }
+    res.status(200).json({ message: 'Estado del reporte actualizado' });
+  });
+};
+
+
 module.exports = {
   crearReporte,
   obtenerReportes,
-  eliminarReporte
+  eliminarReporte,
+  actualizarReporte
 };
