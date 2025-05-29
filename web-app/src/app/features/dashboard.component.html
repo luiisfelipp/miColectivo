@@ -24,6 +24,24 @@
 
     <!-- Sección Visibilidad -->
     <section *ngIf="seccionActiva === 'visibilidad'" class="content">
+      <h3 class="titulo-centrado">🚦 Estadísticas de Visibilidad</h3>
+
+      <div class="estadisticas-grid">
+        <div class="card-estadistica">
+          <h4>Total Vehículos</h4>
+          <p>{{ totalDrivers }}</p>
+        </div>
+        <div class="card-estadistica proceso">
+          <h4>Visibles</h4>
+          <p>{{ visibles }}</p>
+        </div>
+        <div class="card-estadistica pendiente">
+          <h4>Ocultos</h4>
+          <p>{{ ocultos }}</p>
+        </div>
+      </div>
+
+      <!-- Tabla de visibilidad -->
       <h3>Control de Visibilidad Individual</h3>
       <table>
         <thead>
@@ -53,9 +71,30 @@
       </table>
     </section>
 
-  
+
   <!-- Sección Reportes -->
 <section *ngIf="seccionActiva === 'reportes'" class="content">
+  <h3 class="titulo-centrado">📊 Estadísticas de Reportes</h3>
+
+  <div class="estadisticas-grid">
+    <div class="card-estadistica">
+      <h4>Total</h4>
+      <p>{{ totalReportes }}</p>
+    </div>
+    <div class="card-estadistica pendiente">
+      <h4>Pendientes</h4>
+      <p>{{ pendientes }}</p>
+    </div>
+    <div class="card-estadistica proceso">
+      <h4>En proceso</h4>
+      <p>{{ enProceso }}</p>
+    </div>
+    <div class="card-estadistica finalizado">
+      <h4>Finalizados</h4>
+      <p>{{ finalizados }}</p>
+    </div>
+  </div>
+
   <h3>Reportes Recibidos</h3>
 
   <table class="tabla-reportes" *ngIf="reportes.length > 0; else sinReportes">
@@ -96,8 +135,41 @@
     </tbody>
   </table>
 
+  <!-- Gráfico -->
+  <div class="grafico-container">
+    <h4>📊 Reportes por Motivo</h4>
+    <canvas #graficoMotivos></canvas>
+
+    <!-- Leyenda -->
+    <div class="leyenda-motivos">
+      <div *ngFor="let item of motivosGuia" class="motivo-item">
+        <span class="color-circulo" [ngStyle]="{ 'background-color': item.color }"></span>
+        <span>{{ item.motivo }}</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tabla resumen horizontal por motivo -->
+  <div class="tabla-motivos">
+    <h4>📋 Detalle por Motivo</h4>
+    <table>
+      <thead>
+        <tr>
+          <th>Motivo</th>
+          <td *ngFor="let item of motivosResumen">{{ item.motivo }}</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Total</th>
+          <td *ngFor="let item of motivosResumen">{{ item.cantidad }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
   <ng-template #sinReportes>
     <p>No hay reportes para mostrar.</p>
   </ng-template>
 </section>
-
