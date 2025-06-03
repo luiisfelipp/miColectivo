@@ -1,5 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { DriverService } from 'src/app/core/services/driver.service';
+import { DriverService } from '../../../core/services/driver.service';
+import { ToastController } from '@ionic/angular';
+
 
 @Component({
   selector: 'app-home',
@@ -7,34 +9,38 @@ import { DriverService } from 'src/app/core/services/driver.service';
   styleUrls: ['./home.page.scss'],
   standalone: false
 })
-export class DriverHomePage implements OnInit, OnDestroy{
-  passengerCount = 0;
+export class DriverHomePage implements OnInit, OnDestroy {
+  currentPassengers = 0;
   private locationInterval: any;
-  driverId = '123'; // idealmente desde auth,, es un valor “quemado” (hardcoded), puesto manualmente para probar mientras se desarrolla.
-  //más adelante, este ID se sacará del token JWT o del usuario autenticado
-  //Esto lo pusimos a mano mientras no se tiene login de choferes. Pero en producción, se debería obtener automáticamente después que el chofer inicia sesión.
+  locationActive = false;
 
-  constructor(private driverService: DriverService) {}
+  // ID del chofer hardcodeado para pruebas
+  driverId = '123'; // En producción, se obtiene del token JWT
+
+  constructor(
+    private driverService: DriverService,
+    private toastController: ToastController
+    ) {}
 
   ngOnInit() {
     this.startSendingLocation();
   }
+
   ngOnDestroy() {
     clearInterval(this.locationInterval);
   }
 
-  locationActive = false; // para indicar en el html si está activo
-
+  // Envío periódico de ubicación cada 3 segundos
   startSendingLocation() {
     this.locationInterval = setInterval(() => {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           const { latitude, longitude } = pos.coords;
-  
+
           this.driverService.updateLocation(this.driverId, latitude, longitude).subscribe({
             next: () => {
               console.log('Ubicación actualizada');
-              this.locationActive = true; // activamos el chip verde
+              this.locationActive = true;
             },
             error: err => {
               console.error('Error al actualizar ubicación:', err);
@@ -48,21 +54,41 @@ export class DriverHomePage implements OnInit, OnDestroy{
         },
         { enableHighAccuracy: true }
       );
-    }, 3000); // cada 3segundos
+    }, 3000);
   }
 
-  // Cambiar cantidad y enviar al backend
-  changePassengerCount(delta: number) {
-    const newCount = this.passengerCount + delta;
-    if (newCount < 0) return; // evita negativos
-    if (newCount > 4) return;
+  setPassengerCount(count: number) {
+  this.currentPassengers = count;
+  this.driverService.updatePassengerCount(this.currentPassengers).subscribe({
+    next: () => console.log('Cantidad de pasajeros actualizada'),
+    error: err => console.error('Error al actualizar:', err)
+  });
+}
 
-    this.passengerCount = newCount;
+// Conectado al driver service, con el método sendAlert para la centrl
+// Enviar alerta y mostrar TOAST
+sendEmergencyAlert(type: string) {
+  this.driverService.sendAlert(this.driverId, type).subscribe({
+    next: () => {
+      console.log(`Alerta enviada: ${type}`);
+      this.showAlertToast(type); // <- Aquí llamamos al toast después del éxito
+    },
+    error: err => {
+      console.error('Error al enviar alerta:', err);
+    }
+  });
+}
 
-    this.driverService.updatePassengerCount(this.passengerCount).subscribe({
-      next: () => console.log('Cantidad de pasajeros actualizada'),
-      error: err => console.error('Error al actualizar:', err)
-    });
-  }
+// TOAST para avisar al chofer
+async showAlertToast(alertType: string) {
+  const toast = await this.toastController.create({
+    message: `🚨 Alerta de ${alertType} enviada correctamente`,
+    duration: 2000,
+    color: 'warning',
+    position: 'bottom'
+  });
+  await toast.present();
+}
+
 
 }

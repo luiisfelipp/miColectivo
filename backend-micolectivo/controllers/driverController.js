@@ -104,3 +104,26 @@ exports.getDriversConLinea = (req, res) => {
     res.json(results);
   });
 };
+
+// ALERTAS DEL DRIVER
+exports.sendEmergencyAlert = (req, res) => {
+  const { driverId, type, timestamp } = req.body;
+
+  if (!driverId || !type || !timestamp) {
+    return res.status(400).json({ error: 'Datos incompletos' });
+  }
+
+  // Convertir timestamp ISO a formato MySQL
+  // Si timestamp viene como "2025-06-03T13:45:56.700Z"
+  const mysqlTimestamp = timestamp.slice(0, 19).replace('T', ' ');
+
+  const sql = 'INSERT INTO alerts (driver_id, type, timestamp) VALUES (?, ?, ?)';
+
+  db.query(sql, [driverId, type, mysqlTimestamp], (err, result) => {
+    if (err) {
+      console.error('Error al guardar alerta:', err);
+      return res.status(500).json({ error: 'Error del servidor' });
+    }
+    res.json({ success: true, alertId: result.insertId });
+  });
+};

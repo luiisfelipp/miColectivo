@@ -26,6 +26,10 @@ const routes: Routes = [
   {
     path: 'perfil',
     loadChildren: () => import('./features/user/perfil/perfil.module').then( m => m.PerfilPageModule)
+  },
+  {
+    path: 'reporte-chofer',
+    loadChildren: () => import('./features/driver/reporte-chofer/reporte-chofer.module').then( m => m.ReporteChoferPageModule)
   }
 
 ];

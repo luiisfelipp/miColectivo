@@ -22,6 +22,7 @@ router.post('/update-passenger-count', driverController.updatePassengerCount);
 router.get('/visibilidad/por-vehiculo', driverController.getVisibilidadPorVehiculo);
 router.post('/visibilidad/por-vehiculo', driverController.setVisibilidadPorVehiculo);
 
-
+// Para los reportes del chofer a la central
+router.post('/send-alert', driverController.sendEmergencyAlert);
 
 module.exports = router;

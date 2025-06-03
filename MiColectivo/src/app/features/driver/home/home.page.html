@@ -4,15 +4,73 @@
   </ion-toolbar> -->
 </ion-header>
 
-<ion-content class="ion-padding">
-  <!-- Indicador de ubicación activa -->
-  <ion-chip color="success" *ngIf="locationActive">
-    <ion-icon name="radio-outline"></ion-icon>
-    <ion-label>Ubicación activa</ion-label>
-  </ion-chip>
+<ion-content [fullscreen]="true" class="ion-padding content-background">
+  <div class="main-container">
 
-  <h2>Pasajeros actuales: {{ passengerCount }}</h2>
+    <!-- Indicador de estado de ubicación -->
+    <div class="status-indicator">
+      <ion-chip color="success" *ngIf="locationActive" class="status-chip pulse">
+        <ion-icon name="radio-outline"></ion-icon>
+        <ion-label>Ubicación activa</ion-label>
+      </ion-chip>
+    </div>
 
-  <ion-button expand="block" (click)="changePassengerCount(1)">+</ion-button>
-  <ion-button expand="block" color="danger" (click)="changePassengerCount(-1)">-</ion-button>
+<!-- Cantidad de pasajeros -->
+<div class="passenger-section">
+  <div class="section-title">Cantidad de pasajeros</div>
+  <div class="passenger-box">
+    <ion-button
+      *ngFor="let count of [1, 2, 3, 4]"
+      shape="round"
+      class="passenger-button"
+      fill="{{ currentPassengers === count ? 'solid' : 'outline' }}"
+      color="primary"
+      (click)="setPassengerCount(count)"
+    >
+      <span class="passenger-number">{{ count }}</span>
+    </ion-button>
+  </div>
+</div>
+
+<!-- Sección de alertas de emergencia -->
+<div class="emergency-section">
+  <h3 class="section-title emergency-title">
+    Alertas
+  </h3>
+
+  <div class="alert-grid">
+    <ion-button class="alert-button yellow" size="small" fill="solid" (click)="sendEmergencyAlert('trafico')">
+      <ion-icon name="time-outline" slot="start"></ion-icon>
+      Tráfico
+    </ion-button>
+    <ion-button class="alert-button yellow" size="small" fill="solid" (click)="sendEmergencyAlert('calle cerrada')">
+      <ion-icon name="time-outline" slot="start"></ion-icon>
+      Calle cerrada
+    </ion-button>
+    <ion-button class="alert-button red" size="small" fill="solid" (click)="sendEmergencyAlert('robo')">
+      <ion-icon name="alert-circle-outline" slot="start"></ion-icon>
+      Robo
+    </ion-button>
+    <ion-button class="alert-button red" size="small" fill="solid" (click)="sendEmergencyAlert('accidente')">
+      <ion-icon name="alert-circle-outline" slot="start"></ion-icon>
+      Accidente
+    </ion-button>
+    <ion-button class="alert-button red" size="small" fill="solid" (click)="sendEmergencyAlert('problema mecanico')">
+      <ion-icon name="alert-circle-outline" slot="start"></ion-icon>
+      Problema Mecánico
+    </ion-button>
+    <ion-button class="alert-button red" size="small" fill="solid" (click)="sendEmergencyAlert('ayuda')">
+      <ion-icon name="alert-circle-outline" slot="start"></ion-icon>
+      Urgencia
+    </ion-button>
+  </div>
+
+  </div>
+    <!-- Botón flotante que lleva al reporte del chofer
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="report-fab">
+      <ion-fab-button class="fab-button" routerLink="/reporte-chofer">
+        <ion-icon name="document-text" class="fab-icon"></ion-icon>
+      </ion-fab-button>
+    </ion-fab> -->
+  </div>
 </ion-content>
