@@ -10,7 +10,10 @@
           🚦 Visibilidad de Vehículos
         </li>
         <li [class.active]="seccionActiva === 'reportes'" (click)="cambiarSeccion('reportes')">
-          📝 Reportes de Usuarios
+          📝 Reportes de Pasajeros
+        </li>
+        <li [class.active]="seccionActiva === 'reportes chofer'" (click)="cambiarSeccion('reportes chofer')">
+          📝 Reportes de Chofer
         </li>
       </ul>
     </nav>
@@ -22,7 +25,7 @@
       <h2>Panel de Administración de Línea</h2>
     </header>
 
-    <!-- Sección Visibilidad -->
+<!-- Seccion Visibilidad de vehiculos -->
     <section *ngIf="seccionActiva === 'visibilidad'" class="content">
       <h3 class="titulo-centrado">🚦 Estadísticas de Visibilidad</h3>
 
@@ -42,7 +45,7 @@
       </div>
 
       <!-- Tabla de visibilidad -->
-      <h3>Control de Visibilidad Individual</h3>
+      <h3 class="titulo-centrado">Control de Visibilidad Individual</h3>
       <table>
         <thead>
           <tr>
@@ -72,9 +75,9 @@
     </section>
 
 
-  <!-- Sección Reportes -->
+<!-- Seccion Reportes pasajero -->
 <section *ngIf="seccionActiva === 'reportes'" class="content">
-  <h3 class="titulo-centrado">📊 Estadísticas de Reportes</h3>
+  <h3 class="titulo-centrado">📊 Estadísticas de Reportes de Pasajeros</h3>
 
   <div class="estadisticas-grid">
     <div class="card-estadistica">
@@ -95,7 +98,7 @@
     </div>
   </div>
 
-  <h3>Reportes Recibidos</h3>
+  <h3 class="titulo-centrado">Reportes Recibidos</h3>
 
   <table class="tabla-reportes" *ngIf="reportes.length > 0; else sinReportes">
     <thead>
@@ -137,7 +140,7 @@
 
   <!-- Gráfico -->
   <div class="grafico-container">
-    <h4>📊 Reportes por Motivo</h4>
+    <h3 class="titulo-centrado"> Reportes por Motivo</h3>
     <canvas #graficoMotivos></canvas>
 
     <!-- Leyenda -->
@@ -173,3 +176,82 @@
     <p>No hay reportes para mostrar.</p>
   </ng-template>
 </section>
+
+
+<!-- Sección Reportes Chofer -->
+<section *ngIf="seccionActiva === 'reportes chofer'" class="content">
+  <h3 class="titulo-centrado">🚨 Reportes de Choferes</h3>
+
+  <!-- Estadísticas simples -->
+  <div class="estadisticas-grid">
+    <div class="card-estadistica" *ngFor="let item of tiposResumen">
+      <h4 [style.color]="item.color">{{ item.tipo | titlecase }}</h4>
+      <p>{{ item.cantidad }}</p>
+    </div>
+  </div>
+
+  <!-- Tabla de reportes -->
+  <h3 class="titulo-centrado">Detalles de Alertas</h3>
+
+  <table class="tabla-reportes" *ngIf="reportesChofer.length > 0; else sinReportesChofer">
+    <thead>
+      <tr>
+        <th>Tipo</th>
+        <th>Fecha</th>
+        <th>ID Chofer</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let reporte of reportesChofer">
+        <td>{{ reporte.type }}</td>
+        <td>{{ reporte.timestamp | date: 'short' }}</td>
+        <td>{{ reporte.driver_id }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+    <!-- Gráfico por Tipo de Alerta -->
+  <div class="grafico-container">
+    <h3 class="titulo-centrado">Alertas por Tipo</h3>
+    <canvas #graficoTiposChofer></canvas>
+
+    <!-- Leyenda fija -->
+    <div class="leyenda-motivos">
+      <div *ngFor="let item of tiposAlertaGuia" class="motivo-item">
+        <span class="color-circulo" [ngStyle]="{ 'background-color': item.color }"></span>
+        <span>{{ item.tipo | titlecase }}</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Tabla resumen horizontal por tipo -->
+  <div class="tabla-motivos">
+    <h4>📋 Resumen por Tipo</h4>
+    <table>
+      <thead>
+        <tr>
+          <th>Tipo</th>
+          <td *ngFor="let item of tiposResumen">{{ item.tipo }}</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Total</th>
+          <td *ngFor="let item of tiposResumen">{{ item.cantidad }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+
+  <!-- Plantilla cuando no hay reportes -->
+  <ng-template #sinReportesChofer>
+    <p>No hay alertas del chofer para mostrar.</p>
+  </ng-template>
+</section>
+
+
+
+
+

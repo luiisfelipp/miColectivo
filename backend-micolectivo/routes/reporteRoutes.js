@@ -4,15 +4,17 @@ const {
   crearReporte,
   obtenerReportes,
   eliminarReporte,
-  actualizarReporte // 
+  actualizarReporte,
+  obtenerReportesChofer // ✅ importante
 } = require('../controllers/reporteController');
 
-
+// Rutas para reportes de pasajeros
 router.post('/reportes', crearReporte);
 router.get('/reportes', obtenerReportes);
 router.delete('/reportes/:id', eliminarReporte);
+router.put('/reportes/:id', actualizarReporte);
 
-// Nueva ruta para actualizar estado de un reporte
-router.put('/reportes/:id', actualizarReporte); // 👈 esta es la nueva línea
+// Ruta para reportes de choferes (usando tabla `alerts`)
+router.get('/reportes/chofer/:driverId', obtenerReportesChofer); // ✅ ya funciona ahora
 
 module.exports = router;

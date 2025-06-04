@@ -51,9 +51,29 @@ const actualizarReporte = (req, res) => {
 };
 
 
+
+const obtenerReportesChofer = (req, res) => {
+  const { driverId } = req.params;
+
+  const query = 'SELECT * FROM alerts WHERE driver_id = ? ORDER BY timestamp DESC';
+
+  db.query(query, [driverId], (err, results) => {
+    if (err) {
+      console.error('Error al obtener reportes de chofer:', err);
+      return res.status(500).json({ error: 'Error al obtener reportes' });
+    }
+    res.json(results);
+  });
+};
+
+
+
+
+
 module.exports = {
   crearReporte,
   obtenerReportes,
   eliminarReporte,
-  actualizarReporte
+  actualizarReporte,
+  obtenerReportesChofer
 };

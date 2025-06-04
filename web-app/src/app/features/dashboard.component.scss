@@ -52,6 +52,7 @@
 }
 
 .main-header {
+  text-align: center;
   background-color: white;
   padding: 20px 30px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -306,7 +307,83 @@ h3.titulo-reportes {
 }
 
 
+//TABLA DE MOTIVOS
+
+.tabla-motivos {
+  margin: 100px 0;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+
+  h4 {
+    margin: 1px;
+    margin-bottom: 12px;
+    color: #333;
+    font-weight: 600;
+    font-size: 18px;
+    text-align: center;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 500px; // Para scroll horizontal en móviles si hay muchos motivos
+
+    th,
+    td {
+      text-align: center;
+      padding: 10px 12px;
+      border: 1px solid #e0e0e0;
+    }
+
+    thead th {
+      background-color: #f5f5f5;
+      color: #444;
+    }
+
+    tbody th {
+      background-color: #f0f0f0;
+      color: #444;
+    }
+
+    td {
+      background-color: #fafafa;
+      font-weight: 500;
+      color: #333;
+    }
+  }
+
+  // Responsive: tabla con scroll en pantallas pequeñas
+  @media (max-width: 600px) {
+    table {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+  }
+}
 
 
-//OTROS
+
+//CSS REPORTES CHOFER 
+
+.leyenda-motivos {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+.motivo-item {
+  margin-right: 1rem;
+  display: flex;
+  align-items: center;
+}
+.color-circulo {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 5px;
+  display: inline-block;
+}
 

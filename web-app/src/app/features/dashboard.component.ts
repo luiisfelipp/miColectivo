@@ -2,7 +2,9 @@ import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { Reporte, ReporteService } from '../features/reportes/reporte.service';
+import { ReporteChoferService, ReporteChofer } from '../features/reportes/reporte-chofer.service';
 import Chart from 'chart.js/auto';
+
 
 @Component({
   selector: 'app-dashboard',
@@ -14,8 +16,13 @@ import Chart from 'chart.js/auto';
 export class DashboardComponent implements AfterViewInit {
   drivers: any[] = [];
   reportes: Reporte[] = [];
-  seccionActiva: 'visibilidad' | 'reportes' = 'visibilidad';
+  reportesChofer: ReporteChofer[] = [];
+  driverId: string = '123'; // el mismo que usa el chofer, temporalmente fijo
+  tiposResumen: { tipo: string; cantidad: number; color: string }[] = [];
 
+ 
+  seccionActiva: 'visibilidad' | 'reportes' | 'reportes chofer' = 'visibilidad';
+  
   // Lista fija de motivos con sus colores asignados para la leyenda fija
   motivosGuia: { motivo: string; color: string }[] = [
     { motivo: 'Pérdida de documentos', color: '#007bff' },  // azul
@@ -23,6 +30,15 @@ export class DashboardComponent implements AfterViewInit {
     { motivo: 'Conductor agresivo', color: '#ffc107' },     // amarillo
     { motivo: 'Otro', color: '#dc3545' }                    // rojo
   ];
+
+    tiposAlertaGuia: { tipo: string; color: string }[] = [
+      { tipo: 'trafico', color: '#ffc107' },            // amarillo
+      { tipo: 'calle cerrada', color: '#ffc107' },      // amarillo
+      { tipo: 'robo', color: '#dc3545' },               // rojo
+      { tipo: 'accidente', color: '#dc3545' },          // rojo
+      { tipo: 'problema mecanico', color: '#dc3545' },  // rojo
+      { tipo: 'ayuda', color: '#dc3545' }               // rojo
+    ];
 
   // Aquí guardaremos los motivos que están presentes en los reportes, con cantidad y color para el gráfico
   motivosResumen: { motivo: string; cantidad: number; color: string }[] = [];
@@ -32,26 +48,57 @@ export class DashboardComponent implements AfterViewInit {
   pendientes = 0;
   enProceso = 0;
   finalizados = 0;
-
+  
   totalDrivers = 0;
   visibles = 0;
   ocultos = 0;
 
+  totalAlertas = 0;
+
+
   @ViewChild('graficoMotivos', { static: false }) graficoMotivosCanvas!: ElementRef<HTMLCanvasElement>;
   chart!: Chart;
 
-  constructor(private http: HttpClient, private reporteService: ReporteService) {
+  @ViewChild('graficoTiposChofer', { static: false }) graficoTiposChoferCanvas!: ElementRef<HTMLCanvasElement>;
+  graficoTiposChoferChart!: Chart;
+
+
+  constructor(
+    private http: HttpClient,
+    private reporteService: ReporteService,
+    private reporteChoferService: ReporteChoferService
+  ) {
     this.cargarVisibilidadPorVehiculo();
   }
 
   ngOnInit(): void {
     this.cargarReportes();
+    this.cargarReportesChofer('123');
+    
+    
+
   }
 
   ngAfterViewInit(): void {
     // No hacemos nada aquí porque generamos el gráfico luego de cargar reportes
   }
 
+  cargarReportesChofer(driverId: string): void {
+    this.reporteChoferService.obtenerReportes(driverId).subscribe({
+      next: (data) => {
+        this.reportesChofer = data;
+        console.log('🚗 Reportes chofer cargados:', data);
+
+        // Generar gráfico una vez que los datos estén listos
+        setTimeout(() => this.generarGraficoPorTipoChofer(), 0);
+      },
+      error: (err) => console.error('Error cargando reportes chofer:', err)
+    });
+  }
+
+
+
+  
   cargarReportes(): void {
     this.reporteService.obtenerReportes().subscribe({
       next: (data) => {
@@ -70,6 +117,8 @@ export class DashboardComponent implements AfterViewInit {
       error: (err) => console.error('Error cargando reportes:', err)
     });
   }
+
+  
 
   generarGraficoPorMotivo(): void {
     if (!this.graficoMotivosCanvas?.nativeElement) return;
@@ -119,15 +168,23 @@ export class DashboardComponent implements AfterViewInit {
     });
   }
 
-  cambiarSeccion(seccion: 'visibilidad' | 'reportes') {
+  cambiarSeccion(seccion: 'visibilidad' | 'reportes' | 'reportes chofer') {
     this.seccionActiva = seccion;
+
     if (seccion === 'reportes') {
       setTimeout(() => {
         if (this.chart) this.chart.destroy();
         this.generarGraficoPorMotivo();
       }, 0);
     }
+
+    if (seccion === 'reportes chofer') {
+      this.cargarReportesChofer(this.driverId); // 👈 El gráfico se genera desde ahí
+    }
   }
+
+
+
 
   cargarVisibilidadPorVehiculo() {
     this.http.get<any[]>('http://localhost:3000/driver/visibilidad/por-vehiculo')
@@ -171,4 +228,50 @@ export class DashboardComponent implements AfterViewInit {
       }
     });
   }
+
+
+  generarGraficoPorTipoChofer(): void {
+    if (!this.graficoTiposChoferCanvas?.nativeElement) return;
+
+    const conteoPorTipo: { [tipo: string]: number } = {};
+    this.reportesChofer.forEach(a => {
+      conteoPorTipo[a.type] = (conteoPorTipo[a.type] || 0) + 1;
+    });
+
+    this.tiposResumen = Object.keys(conteoPorTipo).map(tipo => {
+      const guia = this.tiposAlertaGuia.find(g => g.tipo === tipo);
+      return {
+        tipo,
+        cantidad: conteoPorTipo[tipo],
+        color: guia ? guia.color : '#999999'
+      };
+    });
+
+    const labels = this.tiposResumen.map(item => item.tipo);
+    const dataValues = this.tiposResumen.map(item => item.cantidad);
+    const backgroundColors = this.tiposResumen.map(item => item.color);
+
+    if (this.graficoTiposChoferChart) {
+      this.graficoTiposChoferChart.destroy();
+    }
+
+    this.graficoTiposChoferChart = new Chart(this.graficoTiposChoferCanvas.nativeElement, {
+      type: 'pie',
+      data: {
+        labels,
+        datasets: [{
+          data: dataValues,
+          backgroundColor: backgroundColors
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+  }
+
 }
+
