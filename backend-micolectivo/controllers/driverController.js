@@ -68,25 +68,92 @@ let visibilidadPorVehiculo = {
   5: true,
 };
 
+
+////////////////////// 
+
+
 exports.getVisibilidadPorVehiculo = (req, res) => {
-  const respuesta = Object.entries(visibilidadPorVehiculo).map(([id, visible]) => ({
-    id: parseInt(id),
-    name: `Vehículo ${id}`, // puedes personalizarlo si tienes los nombres
-    visible
-  }));
-  res.json(respuesta);
+  // Obtener lista de vehículos con su estado is_active
+  const query = `
+    SELECT id, name, is_active
+    FROM drivers
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error al obtener visibilidad:', err);
+      return res.status(500).json({ error: 'Error al obtener visibilidad' });
+    }
+
+    // Mapear para enviar visible como booleano
+    const respuesta = results.map(driver => ({
+      id: driver.id,
+      name: driver.name,
+      visible: !!driver.is_active
+    }));
+
+    res.json(respuesta);
+  });
 };
 
 exports.setVisibilidadPorVehiculo = (req, res) => {
   const { driverId, visible } = req.body;
+
   if (typeof driverId !== 'number' || typeof visible !== 'boolean') {
     return res.status(400).json({ error: 'Parámetros inválidos' });
   }
 
-  visibilidadPorVehiculo[driverId] = visible;
-  res.json({ ok: true, driverId, visible });
+  const nuevoEstado = visible ? 1 : 0;
+  const accion = visible ? 'MOSTRAR' : 'OCULTAR';
+
+  // 1. Actualizar estado en drivers
+  const updateQuery = `UPDATE drivers SET is_active = ? WHERE id = ?`;
+
+  db.query(updateQuery, [nuevoEstado, driverId], (err) => {
+    if (err) {
+      console.error('Error al actualizar estado:', err);
+      return res.status(500).json({ error: 'Error al actualizar estado' });
+    }
+
+    // 2. Insertar registro en historial
+    const insertQuery = `
+      INSERT INTO registro_visibilidad (id_vehiculo, accion, fecha)
+      VALUES (?, ?, NOW())
+    `;
+
+    db.query(insertQuery, [driverId, accion], (err2) => {
+      if (err2) {
+        console.error('Error al insertar historial:', err2);
+        return res.status(500).json({ error: 'Error al registrar historial' });
+      }
+
+      // 3. Responder OK y nuevo estado
+      res.json({ ok: true, driverId, visible });
+    });
+  });
 };
 
+
+exports.getHistorialVisibilidad = (req, res) => {
+  const sql = `
+    SELECT rv.id, rv.id_vehiculo, d.name AS nombre_vehiculo, rv.accion, rv.fecha
+    FROM registro_visibilidad rv
+    LEFT JOIN drivers d ON d.id = rv.id_vehiculo
+    ORDER BY rv.fecha DESC
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error al obtener historial:', err);
+      return res.status(500).json({ error: 'No se pudo obtener el historial' });
+    }
+    res.json(results);
+  });
+};
+
+
+
+////////////////////////////
 
 
 

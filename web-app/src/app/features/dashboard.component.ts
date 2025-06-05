@@ -4,7 +4,9 @@ import { CommonModule } from '@angular/common';
 import { Reporte, ReporteService } from '../features/reportes/reporte.service';
 import { ReporteChoferService, ReporteChofer } from '../features/reportes/reporte-chofer.service';
 import Chart from 'chart.js/auto';
-import { DriverService } from '../services/driver.service'; // ajustá la ruta si es distinta
+import { DriverService,RegistroVisibilidad } from '../services/driver.service'; // ajustá la ruta si es distinta
+
+
 import { FormsModule } from '@angular/forms';
 import { from } from 'rxjs';
 
@@ -26,12 +28,12 @@ export class DashboardComponent implements AfterViewInit {
   driverId: string = '123'; // el mismo que usa el chofer, temporalmente fijo
   tiposResumen: { tipo: string; cantidad: number; color: string }[] = [];
   
+  historialVisibilidad: RegistroVisibilidad[] = [];
 
   seccionActiva: 'visibilidad' | 'reportes' | 'reportes chofer' | 'historial' = 'visibilidad';
   
   
 
-  historialVisibilidad: any[] = [];
   
 
 
@@ -81,18 +83,32 @@ export class DashboardComponent implements AfterViewInit {
     private reporteService: ReporteService,
     private reporteChoferService: ReporteChoferService,
     private driverService: DriverService
-  ) {
+  ) 
+  
+  {
     this.cargarVisibilidadPorVehiculo();
   }
 
   ngOnInit(): void {
     this.cargarReportes();
     this.cargarReportesChofer('123');
-    
+    this.cargarConductores();
+    this.cargarHistorial();
   }
 
   ngAfterViewInit(): void {
     // No hacemos nada aquí porque generamos el gráfico luego de cargar reportes
+  }
+
+  cargarHistorial() {
+    this.driverService.getHistorialVisibilidad().subscribe({
+      next: (data) => {
+        this.historialVisibilidad = data;
+      },
+      error: (err) => {
+        console.error('Error cargando historial de visibilidad', err);
+      }
+    });
   }
 
   cargarReportesChofer(driverId: string): void {
@@ -108,7 +124,19 @@ export class DashboardComponent implements AfterViewInit {
     });
   }
 
-
+  cargarConductores(): void {
+    this.http.get<any[]>('http://localhost:3000/driver/visibilidad/por-vehiculo')
+      .subscribe({
+        next: (data) => {
+          // Asegurarse que visible sea boolean
+          this.drivers = data.map(driver => ({
+            ...driver,
+            visible: driver.visible === true || driver.visible === 'true'
+          }));
+        },
+        error: (err) => console.error('Error al cargar conductores:', err)
+      });
+  }
 
   
   cargarReportes(): void {
@@ -194,9 +222,7 @@ export class DashboardComponent implements AfterViewInit {
       this.cargarReportesChofer(this.driverId); // 👈 El gráfico se genera desde ahí
     }
 
-    if (seccion === 'historial') {
-    this.obtenerHistorialVisibilidad();
-  }
+    
   }
 
 
@@ -215,6 +241,19 @@ export class DashboardComponent implements AfterViewInit {
       });
   }
 
+  
+
+
+  obtenerHistorialVisibilidad() {
+    this.http.get<any[]>('http://localhost:3000/driver/visibilidad/historial')
+      .subscribe({
+        next: (data) => {
+          this.historialVisibilidad = data;
+        },
+        error: (err) => console.error('Error al obtener historial:', err)
+      });
+  }
+
   toggleVisibilidad(driver: any) {
     const nuevoEstado = !driver.visible;
     this.http.post('http://localhost:3000/driver/visibilidad/por-vehiculo', {
@@ -226,10 +265,16 @@ export class DashboardComponent implements AfterViewInit {
         this.totalDrivers = this.drivers.length;
         this.visibles = this.drivers.filter(d => d.visible).length;
         this.ocultos = this.drivers.filter(d => !d.visible).length;
+
+        // ✅ Recargar historial después de cambiar visibilidad
+        if (this.seccionActiva === 'historial') {
+          this.obtenerHistorialVisibilidad();
+        }
       },
       error: (err) => console.error('Error al actualizar visibilidad:', err)
     });
   }
+
 
   cambiarEstado(reporte: Reporte, nuevoEstado: string) {
     const actualizado = { ...reporte, estado: nuevoEstado };
@@ -292,16 +337,7 @@ export class DashboardComponent implements AfterViewInit {
 
   
 
-  obtenerHistorialVisibilidad() {
-    this.http.get<any[]>('http://localhost:3000/driver/visibilidad/historial').subscribe({
-      next: (data) => {
-        this.historialVisibilidad = data;
-      },
-      error: (err) => {
-        console.error('Error al obtener historial de visibilidad:', err);
-      }
-    });
-  }
+  
 
   
 
