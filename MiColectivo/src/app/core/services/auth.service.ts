@@ -2,7 +2,7 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'; // Para hacer peticiones HTTP
-import { Observable } from 'rxjs'; // Para manejar respuestas asincrónicas
+import { Observable, tap } from 'rxjs'; // Para manejar respuestas asincrónicas
 
 @Injectable({
   providedIn: 'root' // Esto hace que el servicio sea accesible en toda la app
@@ -13,20 +13,33 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   // Método para iniciar sesión
-  login(credentials: { username: string, password: string }): Observable<any> {
-    // Llama al backend para autenticar al usuario
-    return this.http.post(`${this.apiUrl}/login`, credentials);
+  login(credentials: { username: string; password: string }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/login`, credentials).pipe(
+      tap(response => {
+        localStorage.setItem('auth_token', response.token);
+        localStorage.setItem('user_role', response.role); // Guarda el rol que entrega el backend
+      })
+    );
   }
 
   // Método para verificar si el usuario está autenticado
   isAuthenticated(): boolean {
-    // Verifica si el token JWT está guardado en el localStorage
     return !!localStorage.getItem('auth_token');
+  }
+
+  // Obtener token
+  getToken(): string | null {
+    return localStorage.getItem('auth_token');
+  }
+
+  // Obtener el rol del usuario autenticado
+  getRole(): string | null {
+    return localStorage.getItem('user_role');
   }
 
   // Método para cerrar sesión
   logout(): void {
-    // Elimina el token JWT al cerrar sesión
     localStorage.removeItem('auth_token');
+    localStorage.removeItem('user_role');
   }
 }

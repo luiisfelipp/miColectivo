@@ -21,6 +21,7 @@ export class MapaColectivosPage implements OnInit {
   // Coordenadas de recorrido por línea
   lineaCoordenadas: { [lineaId: number]: google.maps.LatLngLiteral[] } = {
     1: [ 
+      { lat: -33.6007128347909, lng: -70.71154892893544 },
       { lat: -33.59811202557675, lng: -70.71042826842779 },
       { lat: -33.59878269849519, lng: -70.70730832357687 },
       { lat: -33.59904177669798, lng: -70.70610966722803 },
@@ -28,7 +29,9 @@ export class MapaColectivosPage implements OnInit {
       { lat: -33.596539427818826, lng: -70.70377304598303 },
       { lat: -33.59495962472213, lng: -70.70321544317109 },
       { lat: -33.59464366063627, lng: -70.70456582817069 },
-      { lat: -33.59382673473333, lng: -70.70869722299125 }
+      { lat: -33.59382673473333, lng: -70.70869722299125 },
+      { lat: -33.58927642917139, lng: -70.70692125324311 },
+      { lat: -33.59101057142675, lng: -70.69966684517914 }
     ],
     2: [
       { lat: -33.592776786559334, lng: -70.69968402995616 },
@@ -37,7 +40,8 @@ export class MapaColectivosPage implements OnInit {
       { lat: -33.59463951383927, lng: -70.70455122847373 },
       { lat: -33.594389282203544, lng: -70.70592451948977 },
       { lat: -33.59383519531262, lng: -70.70859599961577 },
-      { lat: -33.589248116390095, lng: -70.70696293698138 }
+      { lat: -33.588965921987516, lng: -70.70684330493371 },
+      { lat: -33.58815038571377, lng: -70.71011139114277}
     ]
   };
   // Referencia al trazo dibujado de la línea seleccionada

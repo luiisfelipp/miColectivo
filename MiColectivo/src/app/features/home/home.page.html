@@ -1,151 +1,79 @@
-<ion-header [translucent]="true">
-  <ion-toolbar class="header-toolbar">
-    <ion-title class="app-title">
-      <ion-icon name="bus" class="title-icon"></ion-icon>
-      Mi Colectivo
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true" class="ion-padding content-background">
+
+  <!-- Header ahora dentro de ion-content -->
+  <ion-header>
+    <ion-toolbar class="titulo">
+      <h1>¡Bienvenido!</h1>
+    </ion-toolbar>
+  </ion-header>
+
   <div class="main-container">
-    <!-- Logo animado -->
+
+    <!-- Logo y slogan -->
     <div class="logo-container">
       <img src="../../../../assets/icon/taxi.png" alt="Logo Mi Colectivo" class="app-logo pulse-animation" />
       <h2 class="app-slogan">Tu transporte, a un toque</h2>
     </div>
 
-<!-- Botones principales -->
-<div class="action-buttons">
-  <ion-button 
-    expand="block" 
-    shape="round" 
-    class="user-button"
-    (click)="showUserLogin = !showUserLogin; showDriverLogin = false">
-    <ion-icon slot="start" name="person-circle"></ion-icon>
-    Soy Pasajero
-  </ion-button>
+    <!-- Login -->
+    <ion-card class="login-card slide-up">
+      <ion-card-header class="card-header">
+        <ion-card-title class="card-title">
+          <ion-icon name="key"></ion-icon>
+          Iniciar Sesión
+        </ion-card-title>
+        <ion-card-subtitle>Ingresa tus credenciales</ion-card-subtitle>
+      </ion-card-header>
 
-  <ion-button 
-    expand="block" 
-    shape="round" 
-    fill="outline" 
-    class="driver-button"
-    (click)="showDriverLogin = !showDriverLogin; showUserLogin = false">
-    <ion-icon slot="start" name="car-sport"></ion-icon>
-    Soy Chofer
-  </ion-button>
+      <ion-card-content>
+        <form (ngSubmit)="login()" class="login-form">
+          <ion-item lines="full">
+            <ion-label position="floating">
+              <ion-icon name="person" slot="start"></ion-icon>
+              Correo o Usuario
+            </ion-label>
+            <ion-input [(ngModel)]="credentials.username" name="username" required></ion-input>
+          </ion-item>
 
-<ion-button 
-    expand="block" 
-    shape="round" 
-    fill="outline" 
-    class="driver-button"
-    [routerLink]="['/mapa-colectivos']">
-    <ion-icon slot="start" name="map"></ion-icon>
-    Ver mapa
-  </ion-button>
-</div>
+          <ion-item lines="full">
+            <ion-label position="floating">
+              <ion-icon name="lock-closed" slot="start"></ion-icon>
+              Contraseña
+            </ion-label>
+            <ion-input [(ngModel)]="credentials.password" name="password" type="password" required></ion-input>
+          </ion-item>
 
-<!-- Login para usuarios -->
-<ion-card *ngIf="showUserLogin" class="login-card slide-up">
-  <ion-card-header class="card-header">
-    <ion-card-title class="card-title">
-      <ion-icon name="key"></ion-icon>
-      Acceso Pasajeros
-    </ion-card-title>
-    <ion-card-subtitle>Ingresa tus datos</ion-card-subtitle>
-  </ion-card-header>
+          <ion-button expand="block" type="submit" class="login-button">
+            <ion-icon slot="start" name="log-in"></ion-icon>
+            Ingresar
+          </ion-button>
 
-  <ion-card-content>
-    <form (ngSubmit)="userLogin()" class="login-form">
-      <ion-item lines="full">
-        <ion-label position="floating">
-          <ion-icon name="person" slot="start"></ion-icon>
-          Nombre o RUT
-        </ion-label>
-        <ion-input [(ngModel)]="userCredentials.username" name="username" required></ion-input>
-      </ion-item>
-  
-      <ion-item lines="full">
-        <ion-label position="floating">
-          <ion-icon name="lock-closed" slot="start"></ion-icon>
-          Contraseña
-        </ion-label>
-        <ion-input [(ngModel)]="userCredentials.password" name="password" type="password" required></ion-input>
-      </ion-item>
-  
-      <ion-button expand="block" type="submit">
-        <ion-icon slot="start" name="log-in"></ion-icon>
-        Entrar
-      </ion-button>
-    </form>
-  </ion-card-content>
-  
+          <div class="forgot-password">
+            <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+          </div>
+        </form>
 
-  
-</ion-card>
+        <div class="register-link">
+          <ion-button fill="clear" [routerLink]="['/registro']">
+            ¿Eres nuevo? Regístrate aquí
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
 
-<!-- Login para choferes -->
-<ion-card *ngIf="showDriverLogin" class="login-card slide-up">
-  <ion-card-header class="card-header">
-    <ion-card-title class="card-title">
-      <ion-icon name="key"></ion-icon>
-      Acceso Choferes
-    </ion-card-title>
-    <ion-card-subtitle>Ingresa tus credenciales</ion-card-subtitle>
-  </ion-card-header>
+    <!-- Ver Mapa -->
+    <ion-button expand="block" fill="outline" [routerLink]="['/mapa-colectivos']" class="driver-button">
+      <ion-icon slot="start" name="map"></ion-icon>
+      Ver mapa
+    </ion-button>
 
-  <ion-card-content>
-    <form (ngSubmit)="login()" class="login-form">
-      <ion-item lines="full" class="form-item">
-        <ion-label position="floating" class="form-label">
-          <ion-icon name="person" slot="start"></ion-icon>
-          Usuario
-        </ion-label>
-        <ion-input 
-          [(ngModel)]="credentials.username" 
-          name="username" 
-          required
-          class="form-input"></ion-input>
-      </ion-item>
-
-      <ion-item lines="full" class="form-item">
-        <ion-label position="floating" class="form-label">
-          <ion-icon name="lock-closed" slot="start"></ion-icon>
-          Contraseña
-        </ion-label>
-        <ion-input 
-          [(ngModel)]="credentials.password" 
-          name="password" 
-          type="password" 
-          required
-          class="form-input"></ion-input>
-      </ion-item>
-
-      <ion-button 
-        expand="block" 
-        type="submit" 
-        shape="round"
-        class="login-button">
-        <ion-icon slot="start" name="log-in"></ion-icon>
-        Ingresar
-      </ion-button>
-
-      <div class="forgot-password">
-        <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
-      </div>
-    </form>
-  </ion-card-content>
-</ion-card>
-
-
-    <!-- Información de la app -->
+    <!-- Info -->
     <div class="app-info">
       <ion-button fill="clear" class="info-button">
         <ion-icon name="information-circle" slot="start"></ion-icon>
         Conoce más sobre nuestra app
       </ion-button>
     </div>
+
   </div>
 </ion-content>
