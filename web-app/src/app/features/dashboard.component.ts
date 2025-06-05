@@ -4,25 +4,38 @@ import { CommonModule } from '@angular/common';
 import { Reporte, ReporteService } from '../features/reportes/reporte.service';
 import { ReporteChoferService, ReporteChofer } from '../features/reportes/reporte-chofer.service';
 import Chart from 'chart.js/auto';
+import { DriverService } from '../services/driver.service'; // ajustá la ruta si es distinta
+import { FormsModule } from '@angular/forms';
+import { from } from 'rxjs';
 
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
+
+
+
 export class DashboardComponent implements AfterViewInit {
   drivers: any[] = [];
   reportes: Reporte[] = [];
   reportesChofer: ReporteChofer[] = [];
   driverId: string = '123'; // el mismo que usa el chofer, temporalmente fijo
   tiposResumen: { tipo: string; cantidad: number; color: string }[] = [];
-
- 
-  seccionActiva: 'visibilidad' | 'reportes' | 'reportes chofer' = 'visibilidad';
   
+
+  seccionActiva: 'visibilidad' | 'reportes' | 'reportes chofer' | 'historial' = 'visibilidad';
+  
+  
+
+  historialVisibilidad: any[] = [];
+  
+
+
+
   // Lista fija de motivos con sus colores asignados para la leyenda fija
   motivosGuia: { motivo: string; color: string }[] = [
     { motivo: 'Pérdida de documentos', color: '#007bff' },  // azul
@@ -66,7 +79,8 @@ export class DashboardComponent implements AfterViewInit {
   constructor(
     private http: HttpClient,
     private reporteService: ReporteService,
-    private reporteChoferService: ReporteChoferService
+    private reporteChoferService: ReporteChoferService,
+    private driverService: DriverService
   ) {
     this.cargarVisibilidadPorVehiculo();
   }
@@ -75,8 +89,6 @@ export class DashboardComponent implements AfterViewInit {
     this.cargarReportes();
     this.cargarReportesChofer('123');
     
-    
-
   }
 
   ngAfterViewInit(): void {
@@ -168,7 +180,7 @@ export class DashboardComponent implements AfterViewInit {
     });
   }
 
-  cambiarSeccion(seccion: 'visibilidad' | 'reportes' | 'reportes chofer') {
+  cambiarSeccion(seccion: 'visibilidad' | 'reportes' | 'reportes chofer' | 'historial') {
     this.seccionActiva = seccion;
 
     if (seccion === 'reportes') {
@@ -181,6 +193,10 @@ export class DashboardComponent implements AfterViewInit {
     if (seccion === 'reportes chofer') {
       this.cargarReportesChofer(this.driverId); // 👈 El gráfico se genera desde ahí
     }
+
+    if (seccion === 'historial') {
+    this.obtenerHistorialVisibilidad();
+  }
   }
 
 
@@ -272,6 +288,22 @@ export class DashboardComponent implements AfterViewInit {
       }
     });
   }
+
+
+  
+
+  obtenerHistorialVisibilidad() {
+    this.http.get<any[]>('http://localhost:3000/driver/visibilidad/historial').subscribe({
+      next: (data) => {
+        this.historialVisibilidad = data;
+      },
+      error: (err) => {
+        console.error('Error al obtener historial de visibilidad:', err);
+      }
+    });
+  }
+
+  
 
 }
 

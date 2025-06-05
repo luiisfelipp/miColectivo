@@ -15,6 +15,10 @@
         <li [class.active]="seccionActiva === 'reportes chofer'" (click)="cambiarSeccion('reportes chofer')">
           📝 Reportes de Chofer
         </li>
+        <li [class.active]="seccionActiva === 'historial'" (click)="cambiarSeccion('historial')">
+          📅 Historial de Visibilidad
+        </li>
+
       </ul>
     </nav>
   </aside>
@@ -242,9 +246,6 @@
       </tbody>
     </table>
   </div>
-
-
-
   <!-- Plantilla cuando no hay reportes -->
   <ng-template #sinReportesChofer>
     <p>No hay alertas del chofer para mostrar.</p>
@@ -253,5 +254,30 @@
 
 
 
+<!-- Sección Historial de Visibilidad -->
+<section *ngIf="seccionActiva === 'historial'" class="content">
+  <h3 class="titulo-centrado">📅 Historial de Visibilidad de Vehículos</h3>
 
+  <table class="tabla-reportes" *ngIf="historialVisibilidad.length > 0; else sinHistorial">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Vehículo</th>
+        <th>Acción</th>
+        <th>Fecha</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let registro of historialVisibilidad">
+        <td>{{ registro.id }}</td>
+        <td>{{ registro.nombre_vehiculo || 'Desconocido' }}</td>
+        <td>{{ registro.accion }}</td>
+        <td>{{ registro.fecha | date:'short' }}</td>
+      </tr>
+    </tbody>
+  </table>
 
+  <ng-template #sinHistorial>
+    <p>No hay registros de visibilidad.</p>
+  </ng-template>
+</section>
