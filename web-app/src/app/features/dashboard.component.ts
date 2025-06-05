@@ -32,9 +32,35 @@ export class DashboardComponent implements AfterViewInit {
 
   seccionActiva: 'visibilidad' | 'reportes' | 'reportes chofer' | 'historial' = 'visibilidad';
   
-  
 
   
+  mostrarFiltros: boolean = false;
+filtroChofer: string = '';
+filtroAccion: string = '';
+
+get historialFiltrado(): RegistroVisibilidad[] {
+  return this.historialVisibilidad.filter(registro => {
+    const coincideChofer = this.filtroChofer ? registro.nombre_vehiculo === this.filtroChofer : true;
+    const coincideAccion = this.filtroAccion ? registro.accion === this.filtroAccion : true;
+    return coincideChofer && coincideAccion;
+  });
+}
+
+get choferesUnicos(): string[] {
+  const nombres = this.historialVisibilidad.map(r => r.nombre_vehiculo || 'Desconocido');
+  return Array.from(new Set(nombres)).sort();
+}
+
+get accionesUnicas(): string[] {
+  const acciones = this.historialVisibilidad.map(r => r.accion || 'Sin acción');
+  return Array.from(new Set(acciones)).sort();
+}
+
+limpiarFiltros() {
+  this.filtroChofer = '';
+  this.filtroAccion = '';
+}
+
 
 
 
@@ -94,6 +120,8 @@ export class DashboardComponent implements AfterViewInit {
     this.cargarReportesChofer('123');
     this.cargarConductores();
     this.cargarHistorial();
+
+    
   }
 
   ngAfterViewInit(): void {

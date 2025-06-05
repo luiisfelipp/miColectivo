@@ -387,3 +387,32 @@ h3.titulo-reportes {
   display: inline-block;
 }
 
+// 
+
+.filtros-avanzados {
+  margin: 1rem 0;
+  text-align: center;
+
+  button {
+    margin: 0.5rem;
+  }
+
+  .filtros-panel {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+
+    label {
+      display: flex;
+      flex-direction: column;
+      font-weight: bold;
+    }
+
+    select {
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+  }
+}

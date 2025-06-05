@@ -9,15 +9,16 @@
         <li [class.active]="seccionActiva === 'visibilidad'" (click)="cambiarSeccion('visibilidad')">
           🚦 Visibilidad de Vehículos
         </li>
+        <li [class.active]="seccionActiva === 'historial'" (click)="cambiarSeccion('historial')">
+          📅 Historial de Visibilidad
+        </li>
         <li [class.active]="seccionActiva === 'reportes'" (click)="cambiarSeccion('reportes')">
           📝 Reportes de Pasajeros
         </li>
         <li [class.active]="seccionActiva === 'reportes chofer'" (click)="cambiarSeccion('reportes chofer')">
           📝 Reportes de Chofer
         </li>
-        <li [class.active]="seccionActiva === 'historial'" (click)="cambiarSeccion('historial')">
-          📅 Historial de Visibilidad
-        </li>
+        
 
       </ul>
     </nav>
@@ -257,8 +258,34 @@
 <!-- Sección Historial de Visibilidad -->
 <section *ngIf="seccionActiva === 'historial'" class="content">
   <h3 class="titulo-centrado">📅 Historial de Visibilidad de Vehículos</h3>
+  <!-- Filtros Avanzados -->
+  <div class="filtros-avanzados">
+    <button (click)="mostrarFiltros = !mostrarFiltros">
+      {{ mostrarFiltros ? 'Ocultar filtros' : 'Filtrar historial' }}
+    </button>
 
-  <table class="tabla-reportes" *ngIf="historialVisibilidad.length > 0; else sinHistorial">
+    <div *ngIf="mostrarFiltros" class="filtros-panel">
+      <label>
+        Filtrar por chofer:
+        <select [(ngModel)]="filtroChofer">
+          <option value="">-- Todos --</option>
+          <option *ngFor="let chofer of choferesUnicos" [value]="chofer">{{ chofer }}</option>
+        </select>
+      </label>
+
+      <label>
+        Filtrar por acción:
+        <select [(ngModel)]="filtroAccion">
+          <option value="">-- Todas --</option>
+          <option *ngFor="let accion of accionesUnicas" [value]="accion">{{ accion }}</option>
+        </select>
+      </label>
+
+      <button (click)="limpiarFiltros()">Limpiar filtros</button>
+    </div>
+  </div>
+    <!-- Tabla filtrada -->
+  <table class="tabla-reportes" *ngIf="historialFiltrado.length > 0; else sinHistorial">
     <thead>
       <tr>
         <th>Registro ID</th>
@@ -268,7 +295,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let registro of historialVisibilidad">
+      <tr *ngFor="let registro of historialFiltrado">
         <td>{{ registro.id }}</td>
         <td>{{ registro.nombre_vehiculo || 'Desconocido' }}</td>
         <td>{{ registro.accion }}</td>
