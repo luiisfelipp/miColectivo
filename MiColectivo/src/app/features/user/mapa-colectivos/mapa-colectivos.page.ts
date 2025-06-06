@@ -41,7 +41,8 @@ export class MapaColectivosPage implements OnInit {
       { lat: -33.594389282203544, lng: -70.70592451948977 },
       { lat: -33.59383519531262, lng: -70.70859599961577 },
       { lat: -33.588965921987516, lng: -70.70684330493371 },
-      { lat: -33.58815038571377, lng: -70.71011139114277}
+      { lat: -33.58815038571377, lng: -70.71011139114277},
+      { lat: -33.448176036743284, lng: -70.66917338077688}
     ]
   };
   // Referencia al trazo dibujado de la línea seleccionada

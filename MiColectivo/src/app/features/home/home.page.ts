@@ -17,7 +17,12 @@ export class HomePage {
 
    // Usuario y contraseña simulados
   mockUser = {
-    username: 'adrian',
+    username: 'user',
+    password: '1234',
+  };
+
+  mockChofer = {
+    username: 'chofer',
     password: '1234',
   };
 
@@ -32,6 +37,10 @@ export class HomePage {
 
     if (username === this.mockUser.username && password === this.mockUser.password) {
       // Redirigir al mapa o dashboard simulado
+      this.router.navigate(['/mapa-colectivos']);
+    }
+    else if (username === this.mockChofer.username && password === this.mockChofer.password) {
+      // Redirigir al dashboard del chofer
       this.router.navigate(['/driver/home']);
     } else {
       // Mostrar alerta de error
