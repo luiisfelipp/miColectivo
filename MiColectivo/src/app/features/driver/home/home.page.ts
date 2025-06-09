@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DriverService } from '../../../core/services/driver.service';
 import { ToastController } from '@ionic/angular';
-
+import { AuthService } from 'src/app/core/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -19,7 +20,9 @@ export class DriverHomePage implements OnInit, OnDestroy {
 
   constructor(
     private driverService: DriverService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private router: Router,
+    private authService: AuthService
     ) {}
 
   ngOnInit() {
@@ -88,6 +91,11 @@ async showAlertToast(alertType: string) {
     position: 'bottom'
   });
   await toast.present();
+}
+
+  logout() {
+  this.authService.logout();
+  this.router.navigate(['/home']);
 }
 
 

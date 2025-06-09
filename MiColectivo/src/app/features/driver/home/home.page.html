@@ -1,9 +1,3 @@
-<ion-header>
-  <!-- <ion-toolbar>
-    <ion-title>Panel del Chofer</ion-title>
-  </ion-toolbar> -->
-</ion-header>
-
 <ion-content [fullscreen]="true" class="ion-padding content-background">
   <div class="main-container">
 
@@ -73,4 +67,11 @@
       </ion-fab-button>
     </ion-fab> -->
   </div>
+    <ion-toolbar class="jider">
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">
+        <ion-icon color="danger" slot="icon-only" name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
 </ion-content>

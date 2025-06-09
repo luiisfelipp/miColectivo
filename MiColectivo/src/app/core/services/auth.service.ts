@@ -8,7 +8,7 @@ import { Observable, tap } from 'rxjs'; // Para manejar respuestas asincrónicas
   providedIn: 'root' // Esto hace que el servicio sea accesible en toda la app
 })
 export class AuthService {
-  private apiUrl = 'https://api.micolectivo.com/auth'; // La URL del backend (API REST) que maneja la autenticación
+  private apiUrl = 'http://localhost:3000/auth'; // La URL del backend (API REST) que maneja la autenticación
 
   constructor(private http: HttpClient) {}
 
@@ -21,6 +21,12 @@ export class AuthService {
       })
     );
   }
+
+  
+  // Método para registrar un nuevo usuario
+  register(credentials: { username: string; email: string, numero_telefono: string, password: string; role: string }) {
+  return this.http.post<any>(`${this.apiUrl}/register`, credentials);
+}
 
   // Método para verificar si el usuario está autenticado
   isAuthenticated(): boolean {
@@ -42,4 +48,6 @@ export class AuthService {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user_role');
   }
+
+  
 }

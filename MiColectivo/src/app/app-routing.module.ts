@@ -19,7 +19,8 @@ const routes: Routes = [
   {
     path: 'home',
     loadChildren: () => import('./features/home/home.module').then( m => m.HomePageModule)
-  },  {
+  },
+  {
     path: 'reportes',
     loadChildren: () => import('./features/user/reportes/reportes.module').then( m => m.ReportesPageModule)
   },
@@ -30,7 +31,12 @@ const routes: Routes = [
   {
     path: 'reporte-chofer',
     loadChildren: () => import('./features/driver/reporte-chofer/reporte-chofer.module').then( m => m.ReporteChoferPageModule)
+  },
+  {
+    path: 'register',
+    loadChildren: () => import('./features/home/register/register.module').then(m => m.RegisterPageModule)
   }
+
 
 ];
 

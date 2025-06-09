@@ -1,0 +1,69 @@
+ion-content {
+  --background: #f7f9fc; /* Fondo claro y suave */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 20px;
+}
+
+form {
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  padding: 30px 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+// Foto slogan
+.app-logo {
+    width: 120px;
+    height: 120px;
+    display: block;
+    margin: 0 auto 20px auto;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  }
+
+ion-item {
+  margin-bottom: 18px;
+  --background: transparent;
+  --border-color: #d0d7de;
+  border-radius: 8px;
+  --min-height: 56px;
+  --padding-start: 14px;
+  --padding-end: 14px;
+}
+
+ion-label {
+  font-weight: 600;
+  color: #172029;
+}
+
+ion-input, ion-select {
+  font-size: 16px;
+  color: #34495e;
+}
+
+ion-button {
+  margin-top: 10px;
+  --background: #081120; /* azul Ionic */
+  --border-radius: 10px;
+  font-weight: 700;
+  font-size: 17px;
+  box-shadow: 0 4px 8px rgba(56,128,255,0.4);
+  transition: background-color 0.3s ease;
+}
+
+ion-button:hover {
+  --background: #2c6bed;
+}
+
+ion-toolbar {
+  --background: #0b1a35;
+  color: white;
+  font-weight: 700;
+  font-size: 20px;
+  text-align: center;
+}
+

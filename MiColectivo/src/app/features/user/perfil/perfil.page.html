@@ -1,6 +1,11 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Mi Perfil</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">
+        <ion-icon color="danger" slot="icon-only" name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -17,7 +22,7 @@
         <!-- Nombre -->
         <ion-item>
           <ion-label class="label-titulo">Nombre</ion-label>
-          <ion-text>{{ usuario.nombre }}</ion-text>
+          <ion-text>{{ usuario.username }}</ion-text>
         </ion-item>
 
         <!-- Correo -->
@@ -29,7 +34,13 @@
         <!-- Número de telefono -->
         <ion-item>
           <ion-label class="label-titulo">Número de telefono</ion-label>
-          <ion-text>{{ usuario.telefono }}</ion-text>
+          <ion-text>{{ usuario.numero_telefono }}</ion-text>
+        </ion-item>
+
+        <!-- Rol -->
+        <ion-item>
+          <ion-label class="label-titulo"></ion-label>
+          <ion-text>{{ usuario.role }}</ion-text>
         </ion-item>
 
         <!-- Puedes agregar más campos aquí -->
