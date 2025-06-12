@@ -3,7 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Reporte, ReporteService } from '../../../core/services/reportes.service'; // Ajusta el path según tu estructura
 import { ToastController } from '@ionic/angular';
-
+import { AuthService } from 'src/app/core/services/auth.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-reportes',
@@ -31,7 +32,8 @@ export class ReportesPage implements OnInit {
   constructor(
     private fb: FormBuilder,
     private reporteService: ReporteService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private http: HttpClient,
   ) {}
 
   ngOnInit() {
@@ -44,6 +46,20 @@ export class ReportesPage implements OnInit {
 
     // Carga los reportes al iniciar
     this.cargarReportes();
+
+    // Obtener datos del usuario logueado
+  const token = localStorage.getItem('auth_token'); // Ojo: es 'auth_token' en tu AuthService
+  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+  this.http.get('http://localhost:3000/auth/perfil', { headers }).subscribe({
+    next: (data: any) => {
+      this.usuario = data;
+    },
+    error: (err) => {
+      console.error('Error al obtener datos del usuario logueado', err);
+    }
+  });
+
   }
 
   // Enviar el formulario al backend

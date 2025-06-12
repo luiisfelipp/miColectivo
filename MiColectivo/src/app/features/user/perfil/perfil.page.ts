@@ -20,7 +20,7 @@ export class PerfilPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('auth_token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     this.http.get('http://localhost:3000/auth/perfil', { headers })

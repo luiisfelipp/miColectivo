@@ -11,7 +11,7 @@ import { AlertController } from '@ionic/angular';
 })
 export class HomePage {
   credentials = {
-    username: '',
+    nombre: '',
     password: ''
   };
 

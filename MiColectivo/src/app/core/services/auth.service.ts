@@ -13,7 +13,7 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   // Método para iniciar sesión
-  login(credentials: { username: string; password: string }): Observable<any> {
+  login(credentials: { nombre: string; password: string }): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => {
         localStorage.setItem('auth_token', response.token);
@@ -24,7 +24,7 @@ export class AuthService {
 
   
   // Método para registrar un nuevo usuario
-  register(credentials: { username: string; email: string, numero_telefono: string, password: string; role: string }) {
+  register(credentials: { nombre: string; email: string, telefono: string, password: string; role: string }) {
   return this.http.post<any>(`${this.apiUrl}/register`, credentials);
 }
 

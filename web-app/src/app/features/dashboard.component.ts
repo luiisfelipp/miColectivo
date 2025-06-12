@@ -170,6 +170,7 @@ limpiarFiltros() {
   cargarReportes(): void {
     this.reporteService.obtenerReportes().subscribe({
       next: (data) => {
+        console.log('Datos recibidos:', data);
         this.reportes = data;
         this.totalReportes = data.length;
         this.pendientes = data.filter(r => !r.estado || r.estado === 'Pendiente').length;

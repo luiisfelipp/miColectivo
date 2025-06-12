@@ -31,3 +31,9 @@ CREATE TABLE auth_users (
 -- Chofer contraseña: 'chofer' (hasheada)
 INSERT INTO auth_users (username, email, numero_telefono, password, role)
 VALUES ('jose', 'chofer@gmail.com', '+56985632565', '$2b$10$X0VM4T6Fr/2uqIj/vPnrVOlWJrHpBz2VXJatTSv4r9HGMM/w3licS', 'chofer');
+
+
+11-06-2025
+ALTER TABLE auth_users
+  CHANGE COLUMN username nombre VARCHAR(100),
+  CHANGE COLUMN numero_telefono telefono VARCHAR(20);

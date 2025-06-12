@@ -12,7 +12,7 @@
   <form (ngSubmit)="register()">
     <ion-item>
       <ion-label position="floating">Usuario</ion-label>
-      <ion-input type="text" [(ngModel)]="credentials.username" name="username" required></ion-input>
+      <ion-input type="text" [(ngModel)]="credentials.nombre" name="username" required></ion-input>
     </ion-item>
 
     <ion-item>
@@ -22,7 +22,7 @@
 
     <ion-item>
       <ion-label position="floating">Teléfono</ion-label>
-      <ion-input type="tel" [(ngModel)]="credentials.numero_telefono" name="phone" required></ion-input>
+      <ion-input type="tel" [(ngModel)]="credentials.telefono" name="phone" required></ion-input>
     </ion-item>
 
     <ion-item>

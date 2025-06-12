@@ -11,9 +11,9 @@ import { AlertController } from '@ionic/angular';
 })
 export class RegisterPage{
   credentials = {
-  username: '',
+  nombre: '',
   email: '',
-  numero_telefono: '',
+  telefono: '',
   password: '',
   role: 'usuario' // por defecto
   };

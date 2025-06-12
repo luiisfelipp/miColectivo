@@ -6,12 +6,12 @@ const bcrypt = require('bcrypt');
 const query = util.promisify(db.query).bind(db); // 👈 Aquí convertimos a Promesa
 
 exports.login = async (req, res) => {
-  const { username, password } = req.body;
+  const { nombre, password } = req.body;
 
   try {
     const rows = await query(
-      'SELECT * FROM auth_users WHERE username = ?',
-      [username]
+      'SELECT * FROM auth_users WHERE nombre = ?',
+      [nombre]
     );
 
     const user = rows[0];
@@ -39,11 +39,11 @@ exports.login = async (req, res) => {
 
 // REGISTRO
 exports.register = async (req, res) => {
-  const { username, email, numero_telefono, password } = req.body;
+  const { nombre, email, telefono, password } = req.body;
 
   try {
     // Validar campos básicos
-    if (!username || !password) {
+    if (!nombre || !password) {
       return res.status(400).json({ message: 'Faltan datos obligatorios' });
     }
 
@@ -58,8 +58,8 @@ exports.register = async (req, res) => {
 
     // Insertar nuevo usuario
     await query(
-      'INSERT INTO auth_users (username, email, numero_telefono, password, role) VALUES (?, ?, ?, ?, ?)',
-      [username, email, numero_telefono, hashedPassword, 'usuario']
+      'INSERT INTO auth_users (nombre, email, telefono, password, role) VALUES (?, ?, ?, ?, ?)',
+      [nombre, email, telefono, hashedPassword, 'usuario']
     );
 
     res.status(201).json({ message: 'Usuario registrado correctamente' });
@@ -74,7 +74,7 @@ exports.getPerfil = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const rows = await query('SELECT username, email, numero_telefono, role FROM auth_users WHERE id = ?', [userId]);
+    const rows = await query('SELECT nombre, email, telefono, role FROM auth_users WHERE id = ?', [userId]);
 
     if (rows.length === 0) {
       return res.status(404).json({ message: 'Usuario no encontrado' });
