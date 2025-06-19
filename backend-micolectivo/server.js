@@ -12,6 +12,11 @@ const app = express();
 app.use(cors()); // permite conexiones
 app.use(express.json());
 
+app.use((req, res, next) => {
+  console.log('🔥 LLEGÓ UNA PETICIÓN:', req.method, req.url);
+  next();
+});
+
 // Rutas
 app.use('/driver', driverRoutes);
 app.use('/lineas', lineaRoutes);
@@ -20,7 +25,7 @@ app.use('/auth', authRoutes);
 
 // Inicio del servidor
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor escuchando en el puerto ${PORT} WIIII`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Servidor escuchando en http://0.0.0.0:${PORT} WIIII`);
 });
 

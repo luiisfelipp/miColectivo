@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 // Interfaz que representa a un chofer (driver) del sistema
 interface Driver {
@@ -64,6 +65,7 @@ export class MapaColectivosPage implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
+    console.log('🌐 API URL que estoy usando:', environment.apiUrl);
     this.loadMap(); // carga el mapa
     this.obtenerLineas(); // obtiene las líneas desde el backend
     this.startFetchingDrivers();
@@ -72,7 +74,7 @@ export class MapaColectivosPage implements OnInit {
 
   // Esta función solo se usa al principio para saber qué línea tiene cada chofer
 fetchDriversConLinea() {
-  this.http.get<Driver[]>('http://localhost:3000/driver/con-linea')
+  this.http.get<Driver[]>(`${environment.apiUrl}/driver/con-linea`)
     .subscribe({
       next: (data) => {
         this.drivers = data; // guardamos solo para lógica de filtrado por línea
@@ -85,7 +87,7 @@ fetchDriversConLinea() {
 
 
 obtenerLineas() {
-  this.http.get<any[]>('http://localhost:3000/lineas').subscribe(data => {
+  this.http.get<any[]>(`${environment.apiUrl}/lineas`).subscribe(data => {
     this.lineas = data;
   });
 }
@@ -129,7 +131,7 @@ filtrarPorLinea() {
 //
 fetchVisibilidadPorVehiculo() {
     this.http.get<{ id: number; name: string; visible: boolean }[]>(
-      'http://localhost:3000/driver/visibilidad/por-vehiculo'
+      `${environment.apiUrl}/driver/visibilidad/por-vehiculo`
     ).subscribe({
       next: (data) => {
         data.forEach(item => {
@@ -178,7 +180,7 @@ startFetchingDrivers() {
   setInterval(() => {
     // 1. Obtener visibilidad actual
     this.http.get<{ id: number; name: string; visible: boolean }[]>(
-      'http://localhost:3000/driver/visibilidad/por-vehiculo'
+      `${environment.apiUrl}/driver/visibilidad/por-vehiculo`
     ).subscribe({
       next: (data) => {
         data.forEach(item => {
@@ -197,7 +199,7 @@ startFetchingDrivers() {
 
 
 fetchDrivers() {
-  this.http.get<any[]>('http://localhost:3000/driver/locations').subscribe({
+  this.http.get<any[]>(`${environment.apiUrl}/driver/locations`).subscribe({
     next: (drivers) => this.updateDriverOverlays(drivers),
     error: (err) => console.error('Error al obtener ubicaciones:', err),
   });

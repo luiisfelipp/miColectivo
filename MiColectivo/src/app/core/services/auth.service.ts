@@ -3,18 +3,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'; // Para hacer peticiones HTTP
 import { Observable, tap } from 'rxjs'; // Para manejar respuestas asincrónicas
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root' // Esto hace que el servicio sea accesible en toda la app
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000/auth'; // La URL del backend (API REST) que maneja la autenticación
 
   constructor(private http: HttpClient) {}
 
   // Método para iniciar sesión
   login(credentials: { nombre: string; password: string }): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/login`, credentials).pipe(
+    return this.http.post<any>(`${environment.apiUrl}/auth/login`, credentials).pipe(
       tap(response => {
         localStorage.setItem('auth_token', response.token);
         localStorage.setItem('user_role', response.role); // Guarda el rol que entrega el backend
@@ -25,7 +25,7 @@ export class AuthService {
   
   // Método para registrar un nuevo usuario
   register(credentials: { nombre: string; email: string, telefono: string, password: string; role: string }) {
-  return this.http.post<any>(`${this.apiUrl}/register`, credentials);
+  return this.http.post<any>(`${environment.apiUrl}/auth/register`, credentials);
 }
 
   // Método para verificar si el usuario está autenticado

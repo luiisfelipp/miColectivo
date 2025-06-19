@@ -8,6 +8,8 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
 import { GoogleMapsModule } from '@angular/google-maps';
+import { AuthInterceptor } from './core/services/auth.interceptor';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 @NgModule({
   declarations: [AppComponent],
@@ -18,7 +20,15 @@ import { GoogleMapsModule } from '@angular/google-maps';
     GoogleMapsModule,
     HttpClientModule
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
+  providers: [
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+  {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],
+    
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { AlertController } from '@ionic/angular';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -10,6 +11,9 @@ import { AlertController } from '@ionic/angular';
   standalone: false
 })
 export class HomePage {
+  
+  api = environment.apiUrl;
+
   credentials = {
     nombre: '',
     password: ''
